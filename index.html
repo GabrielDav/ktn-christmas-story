@@ -32,7 +32,7 @@
             visibility: hidden;
         }
         @keyframes bottleDropDown {
-            0% { top: 0px; opacity: 0; }
+            0% { top: 100px; opacity: 0; }
             100% { top: 250px; opacity: 1; }
         }
         .bottle-drop-down { animation: bottleDropDown 1.4s; animation-fill-mode: forwards; transition-timing-function: ease-in }
@@ -58,6 +58,42 @@
         input:focus {
             border-color: green
         }
+        @keyframes TextFadeIn {
+            100% {
+            opacity: 1;
+            filter: blur(0);
+            }
+        }
+        .story-txt {
+            opacity: 0;
+            filter: blur(4px);
+        }
+        .story-txt-fadein {
+            animation: TextFadeIn 2s forwards cubic-bezier(.51,-0.01,.34,.69);
+        }
+        @keyframes SmokeFadeOut {
+            100% {
+                background: black;
+            }
+        }
+        .smoke-sect::before {
+            content: '';
+            position: absolute;
+            top:0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #285899;
+            mix-blend-mode: color;
+        }
+        .smoke-sect{
+            height: 100vh;
+            background: black;
+            overflow: hidden;
+        }
+        .smoke-fade-out::before {
+            animation: SmokeFadeOut 1.4s; animation-fill-mode: forwards; transition-timing-function: linear;
+        }
     </style>
 </head>
 
@@ -66,6 +102,30 @@
 
     function chapter1() {
         document.getElementById("c1").style.display = "block";
+        document.getElementById("c1-story-text").classList.add("story-txt-fadein");
+        document.getElementById("c1-key").onkeyup = function c1_enter(event) {
+            if (event.keyCode === 13) {
+                event.preventDefault();
+                event.target.blur();
+                document.getElementById("c1-display-area").classList.add('fade-out');
+                setTimeout(function play_smoke() {
+                    document.getElementById("smoke-vid").playbackRate = 1.5;
+                    document.getElementById("smoke-vid").play();
+                }, 800);
+                setTimeout(function end_c1() {
+                    document.getElementById("c1-display-area").style.display = "none";
+                    document.getElementById("smoke-screen").style.display = "";
+                    
+                    setTimeout(function end_c1_anim() {
+                        document.getElementById("c1").style.display = 'none';
+                    }, 5000)
+                }, 1000);
+                // if (event.target.value.toLowerCase() == 'midnight poison') {
+
+                // }
+            }
+        }
+        
     }
 
     function splash_ready() {
@@ -132,20 +192,25 @@
 </div>
 
 <div id="c1" class="screen" style="display: none;">
-    <div style="width:100%; position: absolute;" class="bottle-drop-down">
-        <img src="bottle.webp" style="width: 200px;display: block;margin-left: auto;margin-right: auto;"></img>
-        
+    <div id="c1-display-area">
+        <div style="width:100%; height: 600px;" >
+            <img class="bottle-drop-down" src="bottle.webp" style="width: 200px;display: block;margin-left: auto;margin-right: auto;position: relative; top: 200px;"></img>
+            
+        </div>
+        <div id="c1-story-text" style="" class="story-txt">
+            <p>Every story needs a time and place.</p>
+            <p>Our story starts from a small magical bottle.</p>
+            <p>Hint: sometimes time and scent are interwoven.</p>
+            <p>What is in the magic bottle:</p>
+        </div>
+        <div>
+            <input id="c1-key" type="input" style="margin-top: 100px;" required />
+        <!-- <img src="lock.png"></img> -->
+        </div>
     </div>
-    <div style="padding-top: 640px;">
-        <p>Every story needs a time and place.</p>
-        <p>Our story starts from a small magical bottle.</p>
-        <p>Hint: sometimes time and scent are interwoven.</p>
-        <p>What is in the magic bottle:</p>
-    </div>
-    <div style="padding-top: 30px;">
-      <input type="input" required />
-      <img src="lock.png"></img>
-    </div>
+    <section class="smoke-sect" id="smoke-screen" style="display: none;">
+        <video id="smoke-vid" src="smoke.mp4" muted style="width: 1500px; margin-top: 600px; margin-left: -400px; object-fit: cover;"></video>
+    </section>
 </div>
 
 <!-- <h1>Hello</h1> -->
