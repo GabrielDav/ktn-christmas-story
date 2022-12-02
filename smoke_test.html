@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <style>
-        section::before{
+        /* section::before{
             content: '';
             position: absolute;
             top:0;
@@ -15,6 +15,21 @@
             background: linear-gradient(to right, #f00,#f00,#0f0,#0ff,#ff0,#0ff);
             mix-blend-mode: color;
             pointer-events: none;
+        } */
+        section::before {
+            content: '';
+            position: absolute;
+            top:0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: red;
+            mix-blend-mode: color;
+        }
+        section{
+            height: 100vh;
+            background: black;
+            overflow: hidden;
         }
         /* body{
     margin:0;
@@ -110,10 +125,10 @@ h1 span:nth-child(9){
     </style>>
     <title>Smoke</title>
 </head>
-<body>
+<body style="background: red;">
     <section>
-        <video src="smoke.mp4" autoplay muted style="width: 100px;"></video>
-        <h1>
+        <video src="smoke.mp4" autoplay muted style="width: 100%;" playbackRate=2></video>
+        <!-- <h1>
             <span>C</span>
             <span>o</span>
             <span>d</span>
@@ -123,7 +138,7 @@ h1 span:nth-child(9){
             <span>a</span>
             <span>i</span>
             <span>l</span>
-        </h1>
+        </h1> -->
     </section>
 </body>
 </html>

@@ -12,6 +12,8 @@
             }
         body {
             background: black;
+            width: 1284px;
+            height: 2778px;
         }
         .screen {
             width: 100%;
@@ -116,9 +118,9 @@
                     document.getElementById("c1-display-area").style.display = "none";
                     document.getElementById("smoke-screen").style.display = "";
                     
-                    setTimeout(function end_c1_anim() {
-                        document.getElementById("c1").style.display = 'none';
-                    }, 5000)
+                    // setTimeout(function end_c1_anim() {
+                    //     document.getElementById("c1").style.display = 'none';
+                    // }, 5000)
                 }, 1000);
                 // if (event.target.value.toLowerCase() == 'midnight poison') {
 
@@ -172,8 +174,8 @@
     }
 
     window.onload = function() {
-        document.getElementById("splash").style.display = "none";
-        chapter1();
+        // document.getElementById("splash").style.display = "none";
+        // chapter1();
         // var now = new Date().getTime();
         // var distance = countDownDate - now;
         // if (distance < 0)
@@ -190,6 +192,7 @@
     
     <h1 id="countdown" class="fade-in" style="color:rgb(234, 83, 90); text-align: center; font-size: 98; font-family: Sniglet;"></h1>
 </div>
+<video id="smoke-vid" src="smoke.mp4" autoplay loop muted style=""></video>
 
 <div id="c1" class="screen" style="display: none;">
     <div id="c1-display-area">
@@ -209,7 +212,7 @@
         </div>
     </div>
     <section class="smoke-sect" id="smoke-screen" style="display: none;">
-        <video id="smoke-vid" src="smoke.mp4" muted style="width: 1500px; margin-top: 600px; margin-left: -400px; object-fit: cover;"></video>
+        <video id="smoke-vid" src="smoke.mp4" loop muted style="width: 1500px; margin-top: 600px; margin-left: -400px; object-fit: cover;"></video>
     </section>
 </div>
 
