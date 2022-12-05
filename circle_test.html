@@ -900,9 +900,12 @@
             document.getElementById('morse-button').onclick = function (event) {
                 //document.getElementById('morse-sound').playbackRate = 0.1;
                 document.getElementById('morse-sound').play();
-                document.getElementById("morse-button").classList.add("circle-pulse");
-                document.getElementById("morse-c1").classList.add("pulse_anim1");
-                document.getElementById("morse-c2").classList.add("pulse_anim2");
+                setInterval(function() {
+                    document.getElementById("morse-button").classList.add("circle-pulse");
+                    document.getElementById("morse-c1").classList.add("pulse_anim1");
+                    document.getElementById("morse-c2").classList.add("pulse_anim2");
+                }, 200);
+                
             }
         }
     </script>
