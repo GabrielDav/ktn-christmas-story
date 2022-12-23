@@ -1,0 +1,512 @@
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            background-color: pink;
+            width: 428px;
+            height: 926px;
+            overflow: hidden;
+            margin: 0;
+        }
+        .container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background-color: black;
+        }
+    /* .container {
+        display: flex;
+        height: 100vh;
+        align-items: center;
+        justify-content: center;
+        background-color: black;
+    } */
+      
+        .christmas-tree {
+            position: absolute;
+            top: 40%;
+            left: 50%;
+            translate: -50% -50%;
+        }
+      
+      .tree {
+        position: absolute;
+        width: 20px;
+        border-right: 5px solid transparent;
+        border-left: 5px solid transparent;
+        border-bottom: 55px solid #823723;
+        height:0;
+        /* animation: DropTree 1s linear; */
+      }
+
+        .tree-drop {
+            animation: DropTree 1s linear forwards;
+        }
+      
+      .tree:before {
+        content:"";
+        position: absolute;
+        background-color: #823723;
+        border-radius: 50%;
+        width: 30px;
+        height:10px;
+        top:50px;
+        left:-5px;
+      }
+      
+      .tree:after {
+        content:"";
+        position: absolute;
+        border-right: 75px solid transparent;
+        border-left: 75px solid transparent;
+        border-bottom: 200px solid #107261;
+        width:0;
+        height:0;
+        top:-180px;
+        left:-65px;
+      }
+      
+      .tree-details {
+        position: absolute;
+        width: 150px;
+        height: 10px;
+        background-color: #107261;
+        border-radius: 50%;
+        top:15px;
+        left:-65px;
+        z-index:1;
+      }
+      
+      .tree-details:before {
+        content:"";
+        position: absolute;
+        background-color: #0a897c;
+        border-radius:50%;
+        width: 5px;
+        height: 5px;
+        top:-10px;
+        left:20px;
+        box-shadow: 50px -50px #0a897c, 30px -70px #0a897c, 40px -130px #0a897c, 70px -5px #0a897c, 85px -75px #0a897c;
+      }
+      
+      .lights {
+        position: absolute;
+        opacity:0;
+      }
+        .lights-drop {
+            animation: light 2s linear infinite, DropTree 1s linear forwards;
+        }
+
+      .star-light {
+        animation: light 2s linear infinite;
+      }
+      
+      @keyframes light {
+        0% {filter: drop-shadow(0 0 2px #fefae0) brightness(1);}
+        50% {filter: drop-shadow(0 0 5px #fefae0) brightness(1.35);}
+        100% {filter: drop-shadow(0 0 2px #fefae0) brightness(1);}
+      }
+      
+      .row-one {
+        position: absolute;
+        background-color: #e9d8a6;
+        border-radius:50%;
+        width:10px;
+        height:10px;
+        top: -120px;
+        left: -15px;
+        box-shadow: 10px 10px #e9d8a6, 25px 15px #e9d8a6, 40px 18px #e9d8a6, 54px 15px #e9d8a6;
+      }
+      
+      .row-two {
+        position: absolute;
+        background-color: #e9d8a6;
+        border-radius:50%;
+        width:10px;
+        height:10px;
+        left:-42px;
+        top:-45px;
+        box-shadow: 10px 10px #e9d8a6, 25px 17px #e9d8a6, 40px 24px #e9d8a6, 55px 28px #e9d8a6, 70px 30px #e9d8a6, 85px 29px #e9d8a6, 100px 25px #e9d8a6, 112px 20px #e9d8a6;
+      }
+      
+      .balls {
+        position: absolute;
+        background-color: #f34653;
+        width:15px;
+        height: 15px;
+        border-radius:50%;
+        z-index:2;
+        opacity:0;
+        box-shadow: -20px -55px #f34653, 25px -70px #f34653;
+        /* animation: DropTree 1s linear 1s forwards; */
+      }
+      
+      .balls:before {
+        content:"";
+        position: absolute;
+        background-color: #f34653;
+        width:13px;
+        height: 13px;
+        border-radius:50%;
+        left:-40px;
+        top:-10px;
+        box-shadow: 100px 10px #f34653, 25px -80px #f34653, 60px -120px #f34653;
+      }
+      
+      .balls:after {
+        content:"";
+        position: absolute;
+        background-color: #94d2bd;
+        width:10px;
+        height: 10px;
+        border-radius:50%;
+        top:-40px;
+        left:40px;
+        box-shadow: -35px -35px #94d2bd, -35px -105px #94d2bd, -60px 45px #94d2bd;
+      }
+      
+        .star {
+            position: absolute;
+            display: block;
+            width: 0px;
+            height: 0px;
+            border-right: 25px solid transparent;
+            border-bottom: 17.5px solid #f9c819;
+            border-left: 25px solid transparent;
+            transform: rotate(-35deg);
+            top:-190px;
+            left:-9px;
+            opacity:0;
+        }
+
+        .star-drop {
+            animation: DropStar 1s linear 1.5s forwards;
+        }
+      
+      .star:before {
+            border-bottom: 20px solid #f9c819;
+            border-left: 7.5px solid transparent;
+            border-right: 7.5px solid transparent;
+            position: absolute;
+            height: 0;
+            width: 0;
+            top: -12.5px;
+            left: -17.5px;
+            display: block;
+            content: '';
+            transform: rotate(-35deg);
+          }
+      
+      .star:after {
+            position: absolute;
+            display: block;
+            top: 0.75px;
+            left: -26.25px;
+            width: 0px;
+            height: 0px;
+            border-right: 25px solid transparent;
+            border-bottom: 17.5px solid #f9c819;
+            border-left: 25px solid transparent;
+            transform: rotate(-70deg);
+            content: '';
+          }
+         
+    @keyframes DropTree {
+        0% {transform: translateY(-470px) scaleY(0.9); opacity: 0;}
+        5% {opacity: 1;}
+        50% {transform: translateY(0px) scaleY(1); opacity: 1;}
+        65% {transform: translateY(-15px) scaleY(0.9); opacity: 1;}
+        75% {transform: translateY(-18px) scaleY(0.9); opacity: 1;}
+        100% {transform: translateY(0px) scaleY(1); opacity: 1;}
+    }
+      
+    @keyframes DropStar {
+        0% {transform: translateY(-470px) scaleY(0.9) rotate(-35deg); opacity: 0;}
+        5% {opacity: 1;}
+        50% {transform: translateY(0px) scaleY(1) rotate(-35deg); opacity: 1;}
+        65% {transform: translateY(-15px) scaleY(0.9) rotate(-35deg); opacity: 1;}
+        75% {transform: translateY(-18px) scaleY(0.9) rotate(-35deg); opacity: 1;}
+        100% {transform: translateY(0px) scaleY(1) rotate(-35deg); opacity: 1;}
+        100% {transform: translateY(0px) scaleY(1) rotate(-35deg); opacity: 1;}
+    }
+      
+      /* .shadow {
+        position: absolute;
+        border-radius: 50%;
+        background-color: rgba(0,0,0,0.7);
+        width: 50px;
+        height: 20px;
+        z-index:-1;
+        top:50px;
+        left:-10px;
+        animation: scale .5s linear forwards;
+      }
+      
+      @keyframes scale {
+        0% {transform: scaleX(1);}
+        100% {transform: scaleX(3);}
+      } */
+
+    @keyframes DropGift {
+        0% {transform: translateY(-470px) scaleY(0.9) rotate(-12deg); opacity: 0;}
+        5% {opacity: 1;}
+        40% {transform: translateY(0px) scaleY(1) rotate(-12deg); opacity: 1;}
+        60% {transform: translateY(-0.8vw) scaleY(0.9) rotate(10deg); opacity: 1;}
+        80% {transform: translateY(-0.4vw) scaleY(0.9) rotate(-8deg); opacity: 1;}
+        100% {transform: translateY(0px) scaleY(1) rotate(0deg); opacity: 1;}
+    }
+        .gift-start {
+            width: 3vw;
+            height: 3vw;
+            opacity: 0;
+        }
+
+      .gift {
+            position: absolute;
+            /*transition: 1s;*/
+            /* margin: 1em 0; */
+            /* padding: 1em 10%; */
+            display: inline-block;
+            top: 44%;
+            left: 64%;
+            z-index: 10;
+            transform: rotate(0deg);
+            translate: -50% -50%;
+        }
+        .gift-ready {
+            opacity: 1;
+        }
+        .gift-drop {
+            animation: DropGift 1s linear 1.5s forwards;
+        }
+        .gift-top {
+            position: relative;
+            width: 110%;
+            height: 25%;
+            background: #DC453D;
+            border-radius: 0.3vw 0.3vw 0 0;
+            transform: translate3d(-5%, 0, 0);
+            background-image: linear-gradient(to right, #DC453D 0%, #DC453D 44%, #FFB447 44%, #FFB447 56%, #DC453D 56%, #DC453D 100%);
+            transition: 1s;
+        }
+        .gift-box {
+            width: 100%;
+            height: 75%;
+            position:relative;
+            background: #DC453D;
+            background-image: linear-gradient(to right, #C33C23 0%, #C33C23 45%, #FFB447 45%, #FFB447 55%, #C33C23  55%, #C33C23 100%);
+            border-radius: 0 0 5px 5px;
+            transition: 1s;
+        }
+        .gift-top::before,
+        .gift-top::after {
+            content: "";
+            width: 0.3vw;
+            height: 0.3vw;
+            border: 0.3vw solid #FFB447;
+            border-radius: 50% 50% 0 50%;
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translate3d(-100%, -100%, 0) skew(10deg, 10deg);
+        }
+
+        .gift-top::after {
+            border-radius: 50% 50% 50% 0;
+            transform: translate3d(0, -100%, 0) skew(-10deg, -10deg);
+        }
+
+        @keyframes BoxWiggle {
+            0% {
+                rotate: 0deg;
+                translate: -50% -50%;
+            }
+            20% {
+                rotate: -7deg;
+                translate: -50% -50%;
+            }
+            
+            40% {
+                rotate: 10deg;
+                translate: -50% -50%;
+            }
+            
+            60% {
+                rotate: 2deg;
+                translate: -50% -50%;
+            }
+            
+            65% {
+                rotate: 0deg;
+                translate: -50% -50%;
+            }
+            
+            70% {
+                rotate: 0deg;
+                translate: -50% -55%;
+            }
+            
+            85% {
+                rotate: 0deg;
+                translate: -50% -45%;
+            }
+            
+            95% {
+                rotate: 0deg;
+                translate: -50% -53%;
+            }
+            
+            100% {
+                rotate: 0deg;
+                translate: -50% -50%;
+            }
+        }
+
+        @keyframes BoxLidOpen {
+            0% {
+                transform: translate3d(-4.5%, 0%, 0) rotate(0deg);
+            }
+            42% {
+                transform: translate3d(-4.5%, -50%, 0) rotate(0deg);
+            }
+            60% {
+                transform: translate3d(-80%, -140%, 0) rotate(-25deg);
+            }
+            90%, 100% {
+                transform: translate3d(-71%, 135%, 0) rotate(-70deg);
+            }
+        }
+
+        .gift-wiggle{
+            
+            rotate: 0deg;
+            translate: -50% -50%;
+            animation: BoxWiggle 1.5s linear; 
+        }
+        .gift-top-open{
+            animation: BoxLidOpen 2s forwards; 
+        }
+
+        @keyframes FadeOut {
+            0% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+            }
+        }
+
+        .fade-out {
+            animation: FadeOut 1s forwards;
+        }
+
+        @keyframes TransformGift {
+            0% {
+                width: 3vw;
+                height: 3vw;
+                top: 44%;
+                left: 64%;
+            }
+            100% {
+                width: 8vw;
+                height: 8vw;
+                top: 40%;
+                left: 50%;
+            }
+        }
+
+        .transform-gift {
+            animation: TransformGift 1s forwards;
+        }
+
+        .gift-center {
+            width: 8vw;
+            height: 8vw;
+            top: 40%;
+            left: 50%;
+        }
+
+        @keyframes TransformGiftTop {
+            0% {
+                width: 0.3vw;
+                height: 0.3vw;
+                border: 0.3vw solid #FFB447;
+            }
+            100% {
+                width: 0.8vw;
+                height: 0.8vw;
+                border: 0.8vw solid #FFB447;
+            }
+        }
+        .transform-gift-top:before,
+        .transform-gift-top:after {
+            animation: TransformGiftTop 1s forwards;
+        }
+    </style>
+    <script>
+        window.onload = function() {
+            document.getElementById("tree").classList.add('tree-drop');
+            setTimeout(() => {
+                document.getElementById("tree-balls").classList.add('tree-drop');
+                document.getElementById("tree-star").classList.add('star-drop');
+                
+                setTimeout(() => {
+                    document.getElementById("tree-lights").classList.add('lights-drop');
+                    gift = document.getElementById("gift");
+                    gift.classList.add('gift-drop');
+                    gift.onclick = () => {
+                        gift.onclick = null;
+                        document.getElementById("christmas-tree").classList.add('fade-out');
+                        setTimeout(() => {
+                            document.getElementById("christmas-tree").style.display = 'none';
+                            gift.classList.add('gift-ready');
+                            gift.classList.remove('gift-start');
+                            gift.classList.add('transform-gift');
+                            document.getElementById('gift-top').classList.add('transform-gift-top');
+                            setTimeout(() => {
+                                gift.classList.add('gift-center');
+                                gift.classList.remove('transform-gift');
+                                gift.classList.add('gift-wiggle');
+                                setTimeout(() => {
+                                    document.getElementById("gift-top").classList.add('gift-top-open');
+                                    setTimeout(() => {
+                                        document.getElementById('container').classList.add('fade-out');
+                                    }, 2000);
+                                }, 1500);
+                            }, 1000);
+                        }, 1000);
+                    }
+                }, 700);
+                
+            }, 700);
+            
+            // document.getElementById("gift").onclick = (event) => {
+            //     document.getElementById("gift").classList.add('gift-wiggle');
+            //     setTimeout(() => {
+            //         document.getElementById("gift-top").classList.add('gift-top-open');
+            //     }, 1500);
+            //     //document.getElementById("gift-top").classList.add('gift-top-open');
+            // }
+        }
+    </script>
+</head>
+<body>
+    <div id="container" class="container">
+        <div id="christmas-tree" class="christmas-tree">
+            <div id="tree" class="tree">
+            <div class="tree-details"></div>
+            </div>
+            <div id="tree-lights" class="lights">
+                <div class="row-one"></div>
+                <div class="row-two"></div>
+            </div>
+            <div id="tree-balls" class="balls"></div>
+            <div id="tree-star" class="star"></div>
+            <div class="shadow"></div>
+        </div>
+        <div id="gift" class="gift-start gift">
+            <div id="gift-top" class="gift-top"></div>
+            <div class="gift-box"></div>
+        </div>
+    </div>
+</body>

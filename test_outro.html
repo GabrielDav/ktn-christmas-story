@@ -1,0 +1,102 @@
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            background-color: black;
+            width: 428px;
+            height: 926px;
+            overflow: hidden;
+            margin: 0;
+        }
+        .container {
+                position: relative;
+                width: 100%;
+                height: 100%;
+                background: black;
+                overflow: hidden;
+            }
+        @keyframes ImgShrink {
+            0% {
+                transform: scale(1,1);
+            }
+            30% {
+                transform: scale(0.3,0.3);
+            }
+            70% {
+                transform: scale(0.32,0.32);
+            }
+            100% {
+                transform: scale(0,0);
+            }
+        }
+        @keyframes FadeToWhite {
+            0% {
+                background: black;
+            }
+            100% {
+                background: white;
+            }
+        }
+        .img-shrink {
+            position: absolute;
+                /* transform: translate(-50%, -50%); */
+            translate: -50% -50%; 
+            top: 45%;
+            left: 50%;
+            height: 38vw;
+            width: 38vw;
+            /* translate: 50% 50%; */
+            animation: ImgShrink 4s forwards cubic-bezier(.51,-0.01,.34,.69);
+        }
+        .fade-to-white {
+            animation: FadeToWhite 1s forwards;
+        }
+        @keyframes FadeToBlack {
+            0% {
+                background: white;
+            }
+            100% {
+                background: black;
+            }
+        }
+        .fade-to-black {
+            animation: FadeToBlack 1s forwards;
+        }
+    </style>
+    <script>
+         window.onload = function() {
+            container = document.getElementById('container');
+            container.classList.add('fade-to-white');
+            setTimeout(() => {
+                wolf = document.getElementById('o-wolf');
+                wolf.classList.add('img-shrink');
+                wolf.style.display = 'block';
+                
+                setTimeout(() => {
+                    wolf.style.display = 'none';
+                    castle = document.getElementById('o-castle');
+                    castle.classList.add('img-shrink');
+                    castle.style.display = 'block';
+                    setTimeout(() => {
+                        castle.style.display = 'none';
+                        book = document.getElementById('o-book');
+                        book.classList.add('img-shrink');
+                        book.style.display = 'block';
+                        setTimeout(() => {
+                            container.classList.remove('fade-to-white');
+                            container.classList.add('fade-to-black');
+                        }, 3900);
+                    }, 4000);
+                }, 4000);
+            }, 800);
+            
+        };
+    </script>
+</head>
+<body>
+    <div id="container" class="container">
+        <img id="o-wolf" src="wolf.png" style="display: none;"/>
+        <img id="o-castle" src="castle.png" style="display: none;"/>
+        <img id="o-book" src="obook.png" style="display: none;"/>
+    </div>
+</body>
