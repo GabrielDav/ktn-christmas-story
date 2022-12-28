@@ -1991,14 +1991,24 @@
                     document.getElementById("c1-display-area").classList.add('fade-out-screen');
                     setTimeout(function play_smoke() {
                         document.getElementById("c1-display-area").style.display = "none";
+                        smoke_cont = document.getElementById('smoke-cont');
+                        smoke_cont.style.display = "block";
+                        smoke_cont.classList.add('fade-in');
                         smoke_vid = document.getElementById("smoke-vid");
-                        smoke_vid.style.display = "";
-                        smoke_vid.classList.add("fade-in");
                         smoke_vid.play();
-                        var smoke_play_int = setTimeout(function() {
-                            document.getElementById("c1").style.display = "none";
-                            chapter2();
-                        }, 5000);
+                        setTimeout(() => {
+                            smoke_cont.style.opacity = 1;
+                            smoke_cont.classList.remove('fade-in');
+                            smoke_cont.classList.add('fade-out');
+                            setTimeout(() => {
+                                document.getElementById("c1").style.display = "none";
+                                chapter2();
+                            }, 1000);
+                        }, 6000);
+                        // var smoke_play_int = setTimeout(function() {
+                        //     document.getElementById("c1").style.display = "none";
+                        //     chapter2();
+                        // }, 7000);
                     }, 1600);
                 }
                 else {
@@ -2087,6 +2097,7 @@
             splash_countdown();
         else
             splash_ready();
+        //chapter1();
     };
     
 </script>
@@ -2142,7 +2153,9 @@
                 <p>Try again</p>
             </div>
         </div>
-        <video id="smoke-vid" src="smoke.mp4" muted playsInline style="width: 100%; display: none; margin-top: 40%;"></video>
+        <div id="smoke-cont" style="width: 100%; height: 100%; position: relative; display: none; opacity: 0; overflow: hidden;">
+            <video id="smoke-vid" src="smoke.mp4" muted playsInline style="width: 100%; position: absolute; translate: -5% 50%; scale: 1.2 1.2;"></video>
+        </div>
     </div>
     <div id="c2" class="screen" style="display: none;">
         <div style="width:100%; height: 20%;" >
