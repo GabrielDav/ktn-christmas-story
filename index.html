@@ -45,6 +45,7 @@
             100% { opacity: 0; }
         }
         .fade-out { animation: fadeOut 0.5s; animation-fill-mode: forwards; }
+        .fade-out-slow { animation: fadeOut 1s; animation-fill-mode: forwards; }
         .fade-out-screen { animation: fadeOut 1.6s; animation-fill-mode: forwards; }
         .default_hidden {
             visibility: hidden;
@@ -1666,6 +1667,7 @@
     var countDownDate = new Date("2022-12-28 10:00:00").getTime();
 
     function chapter8() {
+        window.location.hash = 'fe5d';
         document.getElementById("c8").style.display = "block";
         document.getElementById("coffee").classList.add("book-drop-down");
         setTimeout(() => {
@@ -1695,6 +1697,7 @@
     }
 
     function outro() {
+        window.location.hash = '1985';
         document.getElementById("outro").style.display = "block";
         snake = document.getElementById("snake");
         setTimeout(() => {
@@ -1734,6 +1737,7 @@
     }
 
     function chapter7() {
+        window.location.hash = '902b';
         document.getElementById("c7").style.display = "block";
         document.getElementById("ouroboros").classList.add("book-drop-down");
         setTimeout(() => {
@@ -1763,6 +1767,7 @@
     }
 
     function newIntro() {
+        window.location.hash = '273e';
         document.getElementById("new-splash").style.display = "block";
         document.getElementById("new-splash").classList.add("fade-in");
         setTimeout(() => {
@@ -1873,6 +1878,7 @@
     }
 
     function chapter6() {
+        window.location.hash = 'c1df';
         document.getElementById("c6").style.display = "block";
         document.getElementById("music").classList.add("img-drop-down");
         function playSound() {
@@ -1935,6 +1941,7 @@
     }
 
     function chapter5() {
+        window.location.hash = 'ac347';
         document.getElementById("c5").style.display = "block";
         document.getElementById("rabbit").classList.add("book-drop-down");
         setTimeout(() => {
@@ -1987,6 +1994,7 @@
     }
 
     function chapter4() {
+        window.location.hash = '1b64';
         document.getElementById("c4").style.display = "block";
         document.getElementById("map").classList.add("book-drop-down");
         setTimeout(() => {
@@ -2056,6 +2064,7 @@
     }
 
     function chapter3() {
+        window.location.hash = '77de';
         document.getElementById("c3").style.display = "block";
         document.getElementById("book").classList.add('book-show');
         setTimeout(() => {
@@ -2089,6 +2098,7 @@
         }, 2800);
     }
     function chapter2() {
+        window.location.hash = 'da4b';
         document.getElementById("c2").style.display = "block";
         document.getElementById("house").classList.add("fade-in-mid");
         setTimeout(() => {
@@ -2119,6 +2129,7 @@
     }
 
     function chapter1() {
+        window.location.hash = '356a';
         smoke_vid = document.getElementById("smoke-vid");
         function load_video() {
             var req = new XMLHttpRequest();
@@ -2171,7 +2182,7 @@
                             }, 1000);
                             setTimeout(() => {
                                 document.getElementById("bottle").classList.remove("bottle-shake");
-                                document.getElementById("bottle").classList.add("fade-out");
+                                document.getElementById("bottle").classList.add("fade-out-slow");
                             }, 1400);
                         }
                         
@@ -2257,12 +2268,49 @@
         document.ontouchmove = function(e){
           e.preventDefault();
         }
-        var now = new Date().getTime();
-        var distance = countDownDate - now;
-        if (distance > 0)
-            splash_countdown();
-        else
-            splash_ready();
+        if(window.location.hash) {
+            var hash = window.location.hash.substring(1);
+            if (hash === '356a') {
+                chapter1();
+            }
+            else if (hash === 'da4b') {
+                chapter2();
+            }
+            else if (hash === '77de') {
+                chapter3();
+            }
+            else if (hash === '1b64') {
+                chapter4();
+            }
+            else if (hash === 'ac347') {
+                chapter5();
+            }
+            else if (hash === 'c1df') {
+                chapter6();
+            }
+            else if (hash === '273e') {
+                newIntro();
+            }
+            else if (hash === '902b') {
+                chapter7();
+            }
+            else if (hash === '1985') {
+                outro();
+            }
+            else if (hash === 'fe5d') {
+                chapter8();
+            }
+            else {
+                splash_ready();
+            }
+        } else {
+            var now = new Date().getTime();
+            var distance = countDownDate - now;
+            if (distance > 0)
+                splash_countdown();
+            else
+                splash_ready();
+        }
     };
     
 </script>
