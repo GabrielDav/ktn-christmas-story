@@ -176,8 +176,8 @@
             translate: -50% -50%; 
             top: 45%;
             left: 50%;
-            height: 78vw;
-            width: 78vw;
+            height: 88vw;
+            width: 88vw;
             /* translate: 50% 50%; */
             animation: ImgShrink 4s forwards cubic-bezier(.51,-0.01,.34,.69);
         }
@@ -217,7 +217,7 @@
                 width: 56vw;
             }
             100% {
-                width: 84vw;
+                width: 104vw;
                 opacity: 0;
             }
         }
@@ -1627,9 +1627,9 @@
                     document.getElementById("outro-text-d").classList.add('story-txt-fadein');
                     setTimeout(() => {
                         document.getElementById("outro-text-g").classList.add('story-txt-fadein');
-                    }, 2000);
-                }, 1000);
-            }, 1000);
+                    }, 3000);
+                }, 2000);
+            }, 1500);
             setTimeout(() => {
                 snake.style.opacity = 1;
                 snake.style.width = '50%';
@@ -1810,7 +1810,7 @@
                         setTimeout(() => {
                             document.getElementById("c6").style.display = "none";
                             intermission6();
-                        }, 1600);
+                        }, 2400);
                     }
                     else {
                         event.target.value = "";
@@ -2436,7 +2436,7 @@
         padding-top: 30%;"></img>
         
         <h1 id="new-game" style="opacity: 0; color:rgb(234, 83, 90); text-align: center; font-size: 5vh; font-family: Sniglet;">
-            Begin the story again.</h1>
+            Begin the story again</h1>
     </div>
     
     <div id="c7" class="screen" style="display: none;">
