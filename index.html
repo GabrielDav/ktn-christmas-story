@@ -204,14 +204,14 @@
             0% {
                 color: black;
                 opacity: 0;
-                width: 16vw;
+                width: 8vw;
             }
             /* 10% {
                 color: white;
                 opacity: 1;
                 width: 36vw;
             } */
-            30% {
+            20% {
                 color: white;
                 opacity: 1;
                 width: 56vw;
@@ -228,7 +228,7 @@
         }
 
         .c4-cat-anim {
-            animation: CatAnim 2s forwards ease-out;
+            animation: CatAnim 2s forwards cubic-bezier(1,.87,.38,.9);
         }
 
         .sound-box {
@@ -1911,7 +1911,8 @@
                     event.target.blur();
                     window.scrollTo(0, 0);
                     document.body.scrollTop = 0;
-                    if (event.target.value.toLowerCase().replace(' ', '') == 'cat') {
+                    answer = event.target.value.toLowerCase().replace(' ', '');
+                    if (answer == 'cat' || answer == 'acat' || answer == 'ktn' || answer == 'kitty') {
                         document.getElementById("c4-key").onkeyup = null;
                         document.getElementById("c4").classList.add('fade-out-screen');
                         setTimeout(() => {
@@ -2012,7 +2013,8 @@
                     event.target.blur();
                     window.scrollTo(0, 0);
                     document.body.scrollTop = 0;
-                    if (event.target.value.toLowerCase().replace(' ', '') == 'book') {
+                    answer = event.target.value.toLowerCase().replace(' ', '');
+                    if (answer == 'book' || answer == 'abook') {
                         document.getElementById("c2-key").onkeyup = null;
                         document.getElementById("c2").classList.add('fade-out-screen');
                         setTimeout(() => {
