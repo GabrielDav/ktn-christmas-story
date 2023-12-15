@@ -1,0 +1,2411 @@
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <style>
+        @font-face {
+            font-family: "Sniglet";
+            src: url(Sniglet2.ttf) format("truetype");
+        }
+
+        @font-face {
+            font-family: "Sofia";
+            src: url(PrincessSofia-Regular.ttf) format("truetype");
+        }
+
+        body {
+            background: black;
+            /* width: 1284px;
+            height: 2778px; */
+            width: 428px;
+            height: 926px;
+            overflow: hidden;
+            margin: 0;
+        }
+
+        h1 {
+            color: rgb(234, 83, 90);
+            text-align: center;
+            font-size: 3vh;
+            font-family: Sniglet;
+            font-weight: bold;
+        }
+
+        .content {
+            width: 100%;
+            height: 100%;
+            background: black;
+        }
+
+        .screen {
+            width: 100%;
+            height: 100%;
+        }
+
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 2s;
+            animation-fill-mode: forwards;
+        }
+
+        .fade-in-mid {
+            animation: fadeIn 3s;
+            animation-fill-mode: forwards;
+        }
+
+        .fade-in-slow {
+            animation: fadeIn 4s;
+            animation-fill-mode: forwards;
+        }
+
+        @keyframes fadeOut {
+            0% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0;
+            }
+        }
+
+        .fade-out {
+            animation: fadeOut 0.5s;
+            animation-fill-mode: forwards;
+        }
+
+        .fade-out-slow {
+            animation: fadeOut 1s;
+            animation-fill-mode: forwards;
+        }
+
+        .fade-out-screen {
+            animation: fadeOut 1.6s;
+            animation-fill-mode: forwards;
+        }
+
+        .default_hidden {
+            visibility: hidden;
+        }
+
+
+        /* import font(s) */
+        @import url("https://fonts.googleapis.com/css?family=Special+Elite");
+
+        /* root variables */
+        :root {
+            --text: #4e4e4e;
+            --font: "Special Elite", cursive;
+            --goal: #d13b3a;
+
+            --compass: #e67c54;
+            --compass-bg: #e4ddd6;
+            --needle-north: #d95b4d;
+            --needle-south: #868686;
+            /* stroke-dashoffset is used for the value ultimately picked up by path#walk
+  ! the variable is updated in the script to match the length of the path
+  */
+            --stroke-dashoffset: 0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            width: 100%;
+            font-family: var(--font);
+            color: var(--text);
+            background: var(--bg);
+        }
+
+        /* have the map stretch to cover a sizeable portion of the width of the screen */
+        .map {
+            max-width: 1000px;
+            width: 90vw;
+            height: 90vh;
+            max-height: calc(90vh / 90vw * 1000px);
+            margin: 75px auto 1rem;
+            background: var(--map);
+            border-radius: 10px;
+            box-shadow: 0 0 15px -5px var(--map), 0 2px 5px var(--map);
+            /* position relative to have the div.compass be absolute positioned with respect to this container */
+            position: relative;
+        }
+
+        /* include the compass as a circle */
+        .compass {
+            width: 125px;
+            height: 125px;
+            border-radius: 50%;
+            background: var(--compass-bg);
+            box-shadow: 0 0 0 0.5rem var(--compass);
+            /* move the compass in the top left corner of the map */
+            transform: translate(-50%, -50%) rotate(-12deg);
+            /* position relative to absolute position the needle in the center of the comapss */
+            position: absolute;
+            /* transparent border to have the cardinal points slightly pushed inwards */
+            border: 5px solid transparent;
+        }
+
+        /* include the needle in the center of the compass, using the clip-path property to fake the appearance of the desired shape */
+        .compass .needle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            height: 80%;
+            width: 8%;
+            background: linear-gradient(to bottom,
+                    var(--needle-north) 50%,
+                    var(--needle-south) 50%);
+            transform: translate(-50%, -50%);
+            clip-path: polygon(0% 50%, 50% 0%, 100% 50%, 50% 100%);
+        }
+
+        /* with a pseudo element include a dot as if fixing the needle in place */
+        .compass .needle:after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 7.5px;
+            height: 7.5px;
+            background: var(--text);
+            border-radius: 50%;
+        }
+
+        /* absolute position the cardinal points included in the compass */
+        .compass .direction {
+            text-transform: uppercase;
+            color: var(--text);
+            position: absolute;
+        }
+
+        .compass .direction[data-direction="n"] {
+            color: var(--needle-north);
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .compass .direction[data-direction="e"] {
+            top: 50%;
+            right: 0;
+            transform: translate(-50%, -50%);
+        }
+
+        .compass .direction[data-direction="s"] {
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .compass .direction[data-direction="w"] {
+            top: 50%;
+            left: 0;
+            transform: translate(50%, -50%);
+        }
+
+        /* stretch the svg to cover the space provided by the container */
+        svg {
+            width: 100%;
+            height: 100%;
+            border-radius: inherit;
+        }
+
+        /* style each path element with the color picked up by the stroke property */
+        svg path.x {
+            color: var(--goal);
+        }
+
+        svg path#trail {
+            color: var(--trail);
+            /* have the trail segmented in smaller chunks */
+            stroke-dasharray: 8px;
+        }
+
+        svg path#walk {
+            /* use the same color of the background to effectively hide the trail */
+            color: var(--map);
+        }
+
+        /* animation drawing the X defined by the path.x elements */
+        @keyframes strikeGoal {
+            to {
+                stroke-dashoffset: 0;
+            }
+        }
+
+        /* animation removing the overlay provided in path#walk */
+        @keyframes goToGoal {
+            to {
+                stroke-dashoffset: var(--stroke-dashoffset);
+            }
+        }
+
+        .map-overlay-wrap {
+            position: relative;
+            display: inline-block;
+        }
+
+        .map-overlay-wrap img {
+            display: block;
+            max-width: 100%;
+            height: auto;
+        }
+
+        .map-overlay-wrap svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        @keyframes bottleDropDown {
+            0% {
+                top: 10%;
+                opacity: 0;
+            }
+
+            100% {
+                top: 45%;
+                opacity: 1;
+            }
+        }
+
+        .c1-house-drop {
+            animation: bottleDropDown 1.4s;
+            animation-fill-mode: forwards;
+            transition-timing-function: ease-in
+        }
+
+        @keyframes bookDropDown {
+            0% {
+                top: 10%;
+                opacity: 0;
+            }
+
+            100% {
+                top: 45%;
+                opacity: 1;
+            }
+        }
+
+        .book-drop-down {
+            animation: bookDropDown 1.4s;
+            animation-fill-mode: forwards;
+            transition-timing-function: ease-in
+        }
+
+        p {
+            color: rgb(234, 83, 90);
+            font-size: 2.5vh;
+            text-align: center;
+            width: 80%;
+            margin-left: 10%;
+            font-family: Sniglet;
+        }
+
+        @keyframes imgDropDown {
+            0% {
+                top: 10%;
+                opacity: 0;
+            }
+
+            100% {
+                top: 80%;
+                opacity: 1;
+            }
+        }
+
+        .img-drop-down {
+            animation: imgDropDown 1.4s;
+            animation-fill-mode: forwards;
+            transition-timing-function: ease-in
+        }
+
+        /* input */
+        input[type=input] {
+            display: block;
+            outline: 0;
+            border-width: 0 0 2px;
+            border-color: rgb(50, 50, 50);
+            height: 36px;
+            width: 60%;
+            background: transparent;
+            font-size: 18px;
+            margin-left: auto;
+            margin-right: auto;
+            font-family: Sofia;
+            color: white;
+        }
+
+        input[type=input]:focus {
+            border-color: white
+        }
+
+        @keyframes TextFadeIn {
+            100% {
+                opacity: 1;
+                filter: blur(0);
+            }
+        }
+
+        .story-txt {
+            opacity: 0;
+            color: rgb(234, 83, 90);
+            /* filter: blur(4px); */
+            font-size: 3vh;
+        }
+
+        .story-txt-fadein {
+            font: 3vh Sniglet;
+            animation: TextFadeIn 2s forwards cubic-bezier(.51, -0.01, .34, .69);
+        }
+
+        .msg-txt {
+            opacity: 0;
+            filter: blur(4px);
+            font-size: 3vh;
+        }
+
+        @keyframes TextFade {
+            30% {
+                opacity: 1;
+                filter: blur(0);
+            }
+
+            70% {
+                opacity: 1;
+                filter: blur(0);
+            }
+
+            100% {
+                opacity: 0;
+                filter: blur(0);
+            }
+        }
+
+        .msg-txt-fade {
+            animation: TextFade 6s forwards cubic-bezier(.51, -0.01, .34, .69);
+        }
+
+        @keyframes SmokeFadeOut {
+            100% {
+                background: black;
+            }
+        }
+
+        .smoke-sect::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #285899;
+            mix-blend-mode: color;
+        }
+
+        .smoke-sect {
+            height: 100vh;
+            background: black;
+            overflow: hidden;
+        }
+
+        .smoke-fade-out::before {
+            animation: SmokeFadeOut 1.4s;
+            animation-fill-mode: forwards;
+            transition-timing-function: linear;
+        }
+
+        @keyframes ImgShrink {
+            0% {
+                transform: scale(1, 1);
+            }
+
+            30% {
+                transform: scale(0.3, 0.3);
+            }
+
+            70% {
+                transform: scale(0.32, 0.32);
+            }
+
+            100% {
+                transform: scale(0, 0);
+            }
+        }
+
+        @keyframes FadeToWhite {
+            0% {
+                background: black;
+            }
+
+            100% {
+                background: white;
+            }
+        }
+
+        .img-shrink {
+            position: absolute;
+            /* transform: translate(-50%, -50%); */
+            translate: -50% -50%;
+            top: 45%;
+            left: 50%;
+            height: 88vw;
+            width: 88vw;
+            /* translate: 50% 50%; */
+            animation: ImgShrink 4s forwards cubic-bezier(.51, -0.01, .34, .69);
+        }
+
+        .fade-to-white {
+            animation: FadeToWhite 1s forwards;
+        }
+
+        @keyframes FadeToBlack {
+            0% {
+                background: white;
+            }
+
+            100% {
+                background: black;
+            }
+        }
+
+        .fade-to-black {
+            animation: FadeToBlack 1s forwards;
+        }
+
+        .c3-intermission-cont.img {
+            width: 100%;
+        }
+
+        @keyframes CatAnim {
+            0% {
+                color: black;
+                opacity: 0;
+                width: 8vw;
+            }
+
+            /* 10% {
+                color: white;
+                opacity: 1;
+                width: 36vw;
+            } */
+            20% {
+                color: white;
+                opacity: 1;
+                width: 56vw;
+            }
+
+            50% {
+                color: white;
+                opacity: 1;
+                width: 56vw;
+            }
+
+            100% {
+                width: 104vw;
+                opacity: 0;
+            }
+        }
+
+        .c4-cat-anim {
+            animation: CatAnim 2s forwards cubic-bezier(1, .87, .38, .9);
+        }
+
+        .sound-box {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background: #000000;
+        }
+
+
+
+        .christmas-tree {
+            position: absolute;
+            top: 40%;
+            left: 50%;
+            translate: -50% -50%;
+        }
+
+        .tree {
+            position: absolute;
+            width: 20px;
+            border-right: 5px solid transparent;
+            border-left: 5px solid transparent;
+            border-bottom: 55px solid #823723;
+            height: 0;
+            /* animation: DropTree 1s linear; */
+        }
+
+        .tree-drop {
+            animation: DropTree 1s linear forwards;
+        }
+
+        .tree:before {
+            content: "";
+            position: absolute;
+            background-color: #823723;
+            border-radius: 50%;
+            width: 30px;
+            height: 10px;
+            top: 50px;
+            left: -5px;
+        }
+
+        .tree:after {
+            content: "";
+            position: absolute;
+            border-right: 75px solid transparent;
+            border-left: 75px solid transparent;
+            border-bottom: 200px solid #107261;
+            width: 0;
+            height: 0;
+            top: -180px;
+            left: -65px;
+        }
+
+        .tree-details {
+            position: absolute;
+            width: 150px;
+            height: 10px;
+            background-color: #107261;
+            border-radius: 50%;
+            top: 15px;
+            left: -65px;
+            z-index: 1;
+        }
+
+        .tree-details:before {
+            content: "";
+            position: absolute;
+            background-color: #0a897c;
+            border-radius: 50%;
+            width: 5px;
+            height: 5px;
+            top: -10px;
+            left: 20px;
+            box-shadow: 50px -50px #0a897c, 30px -70px #0a897c, 40px -130px #0a897c, 70px -5px #0a897c, 85px -75px #0a897c;
+        }
+
+        .lights {
+            position: absolute;
+            opacity: 0;
+        }
+
+        .lights-drop {
+            animation: light 2s linear infinite, DropTree 1s linear forwards;
+        }
+
+        .star-light {
+            animation: light 2s linear infinite;
+        }
+
+        @keyframes light {
+            0% {
+                filter: drop-shadow(0 0 2px #fefae0) brightness(1);
+            }
+
+            50% {
+                filter: drop-shadow(0 0 5px #fefae0) brightness(1.35);
+            }
+
+            100% {
+                filter: drop-shadow(0 0 2px #fefae0) brightness(1);
+            }
+        }
+
+        .row-one {
+            position: absolute;
+            background-color: #e9d8a6;
+            border-radius: 50%;
+            width: 10px;
+            height: 10px;
+            top: -120px;
+            left: -15px;
+            box-shadow: 10px 10px #e9d8a6, 25px 15px #e9d8a6, 40px 18px #e9d8a6, 54px 15px #e9d8a6;
+        }
+
+        .row-two {
+            position: absolute;
+            background-color: #e9d8a6;
+            border-radius: 50%;
+            width: 10px;
+            height: 10px;
+            left: -42px;
+            top: -45px;
+            box-shadow: 10px 10px #e9d8a6, 25px 17px #e9d8a6, 40px 24px #e9d8a6, 55px 28px #e9d8a6, 70px 30px #e9d8a6, 85px 29px #e9d8a6, 100px 25px #e9d8a6, 112px 20px #e9d8a6;
+        }
+
+        .balls {
+            position: absolute;
+            background-color: #f34653;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            z-index: 2;
+            opacity: 0;
+            box-shadow: -20px -55px #f34653, 25px -70px #f34653;
+            /* animation: DropTree 1s linear 1s forwards; */
+        }
+
+        .balls:before {
+            content: "";
+            position: absolute;
+            background-color: #f34653;
+            width: 13px;
+            height: 13px;
+            border-radius: 50%;
+            left: -40px;
+            top: -10px;
+            box-shadow: 100px 10px #f34653, 25px -80px #f34653, 60px -120px #f34653;
+        }
+
+        .balls:after {
+            content: "";
+            position: absolute;
+            background-color: #94d2bd;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            top: -40px;
+            left: 40px;
+            box-shadow: -35px -35px #94d2bd, -35px -105px #94d2bd, -60px 45px #94d2bd;
+        }
+
+        .star {
+            position: absolute;
+            display: block;
+            width: 0px;
+            height: 0px;
+            border-right: 25px solid transparent;
+            border-bottom: 17.5px solid #f9c819;
+            border-left: 25px solid transparent;
+            transform: rotate(-35deg);
+            top: -190px;
+            left: -9px;
+            opacity: 0;
+        }
+
+        .star-drop {
+            animation: DropStar 1s linear 1.5s forwards;
+        }
+
+        .star:before {
+            border-bottom: 20px solid #f9c819;
+            border-left: 7.5px solid transparent;
+            border-right: 7.5px solid transparent;
+            position: absolute;
+            height: 0;
+            width: 0;
+            top: -12.5px;
+            left: -17.5px;
+            display: block;
+            content: '';
+            transform: rotate(-35deg);
+        }
+
+        .star:after {
+            position: absolute;
+            display: block;
+            top: 0.75px;
+            left: -26.25px;
+            width: 0px;
+            height: 0px;
+            border-right: 25px solid transparent;
+            border-bottom: 17.5px solid #f9c819;
+            border-left: 25px solid transparent;
+            transform: rotate(-70deg);
+            content: '';
+        }
+
+        @keyframes DropTree {
+            0% {
+                transform: translateY(-470px) scaleY(0.9);
+                opacity: 0;
+            }
+
+            5% {
+                opacity: 1;
+            }
+
+            50% {
+                transform: translateY(0px) scaleY(1);
+                opacity: 1;
+            }
+
+            65% {
+                transform: translateY(-15px) scaleY(0.9);
+                opacity: 1;
+            }
+
+            75% {
+                transform: translateY(-18px) scaleY(0.9);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(0px) scaleY(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes DropStar {
+            0% {
+                transform: translateY(-470px) scaleY(0.9) rotate(-35deg);
+                opacity: 0;
+            }
+
+            5% {
+                opacity: 1;
+            }
+
+            50% {
+                transform: translateY(0px) scaleY(1) rotate(-35deg);
+                opacity: 1;
+            }
+
+            65% {
+                transform: translateY(-15px) scaleY(0.9) rotate(-35deg);
+                opacity: 1;
+            }
+
+            75% {
+                transform: translateY(-18px) scaleY(0.9) rotate(-35deg);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(0px) scaleY(1) rotate(-35deg);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(0px) scaleY(1) rotate(-35deg);
+                opacity: 1;
+            }
+        }
+
+        @keyframes DropGift {
+            0% {
+                transform: translateY(-470px) scaleY(0.99) rotate(-12deg);
+                opacity: 0;
+            }
+
+            5% {
+                opacity: 1;
+            }
+
+            40% {
+                transform: translateY(0px) scaleY(0.99) rotate(-12deg);
+                opacity: 1;
+            }
+
+            45% {
+                transform: translateY(0px) scaleY(0.99) rotate(-12deg);
+                opacity: 1;
+            }
+
+            60% {
+                transform: translateY(-0.6vw) scaleY(0.99) rotate(10deg);
+                opacity: 1;
+            }
+
+            65% {
+                transform: translateY(-0.4vw) scaleY(0.99) rotate(10deg);
+                opacity: 1;
+            }
+
+            80% {
+                transform: translateY(-0.2vw) scaleY(0.99) rotate(-8deg);
+                opacity: 1;
+            }
+
+            85% {
+                transform: translateY(0vw) scaleY(0.99) rotate(-8deg);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(0vw) scaleY(1) rotate(0deg);
+                opacity: 1;
+            }
+        }
+
+        .gift-start {
+            width: 40px;
+            height: 40px;
+            opacity: 0;
+        }
+
+        .gift {
+            position: absolute;
+            /*transition: 1s;*/
+            /* margin: 1em 0; */
+            /* padding: 1em 10%; */
+            display: inline-block;
+            top: 44.3%;
+            left: 64%;
+            z-index: 2;
+            transform: rotate(0deg);
+            translate: -50% -50%;
+        }
+
+        .gift-ready {
+            opacity: 1;
+        }
+
+        .gift-drop {
+            animation: DropGift 1s linear 1.5s forwards;
+        }
+
+        .gift-top {
+            position: relative;
+            width: 110%;
+            height: 25%;
+            background: #DC453D;
+            border-radius: 0.3vw 0.3vw 0 0;
+            transform: translate3d(-5%, 0, 0);
+            background-image: linear-gradient(to right, #DC453D 0%, #DC453D 44%, #FFB447 44%, #FFB447 56%, #DC453D 56%, #DC453D 100%);
+            transition: 1s;
+        }
+
+        .gift-box {
+            width: 100%;
+            height: 75%;
+            position: relative;
+            background: #DC453D;
+            background-image: linear-gradient(to right, #C33C23 0%, #C33C23 45%, #FFB447 45%, #FFB447 55%, #C33C23 55%, #C33C23 100%);
+            border-radius: 0 0 5px 5px;
+            transition: 1s;
+        }
+
+        .gift-top::before,
+        .gift-top::after {
+            content: "";
+            width: 5px;
+            height: 5px;
+            border: 5px solid #FFB447;
+            border-radius: 50% 50% 0 50%;
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translate3d(-100%, -100%, 0) skew(10deg, 10deg);
+        }
+
+        .gift-top::after {
+            border-radius: 50% 50% 50% 0;
+            transform: translate3d(0, -100%, 0) skew(-10deg, -10deg);
+        }
+
+        @keyframes BoxWiggle {
+            0% {
+                rotate: 0deg;
+                translate: -50% -50%;
+            }
+
+            20% {
+                rotate: -7deg;
+                translate: -50% -50%;
+            }
+
+            40% {
+                rotate: 10deg;
+                translate: -50% -50%;
+            }
+
+            60% {
+                rotate: 2deg;
+                translate: -50% -50%;
+            }
+
+            65% {
+                rotate: 0deg;
+                translate: -50% -50%;
+            }
+
+            70% {
+                rotate: 0deg;
+                translate: -50% -55%;
+            }
+
+            85% {
+                rotate: 0deg;
+                translate: -50% -45%;
+            }
+
+            95% {
+                rotate: 0deg;
+                translate: -50% -53%;
+            }
+
+            100% {
+                rotate: 0deg;
+                translate: -50% -50%;
+            }
+        }
+
+        @keyframes BoxLidOpen {
+            0% {
+                transform: translate3d(-4.5%, 0%, 0) rotate(0deg);
+            }
+
+            42% {
+                transform: translate3d(-4.5%, -50%, 0) rotate(0deg);
+            }
+
+            60% {
+                transform: translate3d(-80%, -140%, 0) rotate(-25deg);
+            }
+
+            90%,
+            100% {
+                transform: translate3d(-71%, 135%, 0) rotate(-70deg);
+            }
+        }
+
+        .gift-wiggle {
+
+            rotate: 0deg;
+            translate: -50% -50%;
+            animation: BoxWiggle 1.5s linear;
+        }
+
+        .gift-top-open {
+            animation: BoxLidOpen 2s forwards;
+        }
+
+        @keyframes TransformGift {
+
+            /* 0% {
+                width: 3vw;
+                height: 3vw;
+                top: 44%;
+                left: 64%;
+            } */
+            0% {
+                width: 40px;
+                height: 40px;
+                top: 44%;
+                left: 64%;
+            }
+
+            100% {
+                width: 80px;
+                height: 80px;
+                top: 40%;
+                left: 50%;
+            }
+        }
+
+        .transform-gift {
+            animation: TransformGift 1s forwards;
+        }
+
+        .gift-center {
+            width: 80px;
+            height: 80px;
+            top: 40%;
+            left: 50%;
+        }
+
+        @keyframes TransformGiftTop {
+            0% {
+                width: 5px;
+                height: 5px;
+                border: 5px solid #FFB447;
+            }
+
+            100% {
+                width: 10px;
+                height: 10px;
+                border: 10px solid #FFB447;
+            }
+        }
+
+        .transform-gift-top:before,
+        .transform-gift-top:after {
+            animation: TransformGiftTop 1s forwards;
+        }
+
+        @keyframes SkewText1 {
+            0% {
+                transform: perspective(2vw) rotateX(-30deg) scaleX(0.2);
+                top: 35%;
+                opacity: 0;
+            }
+
+            50% {
+                transform: perspective(2vw) rotateX(-20deg) scaleX(0.4);
+                top: 31%;
+                opacity: 1;
+            }
+
+            100% {
+                transform: perspective(100vw) rotateX(0deg) scaleX(1);
+                top: 10%;
+                opacity: 1;
+            }
+        }
+
+        @keyframes SkewText2 {
+            0% {
+                transform: perspective(2vw) rotateX(-30deg) scaleX(0.2);
+                top: 35%;
+                opacity: 0;
+            }
+
+            70% {
+                transform: perspective(2vw) rotateX(-20deg) scaleX(0.4);
+                top: 31%;
+                opacity: 1;
+            }
+
+            100% {
+                transform: perspective(100vw) rotateX(0deg) scaleX(1);
+                top: 13%;
+                opacity: 1;
+            }
+        }
+
+        @keyframes SkewText3 {
+            0% {
+                transform: perspective(2vw) rotateX(-30deg) scaleX(0.2);
+                top: 35%;
+                opacity: 0;
+            }
+
+            70% {
+                transform: perspective(2vw) rotateX(-20deg) scaleX(0.4);
+                top: 31%;
+                opacity: 1;
+            }
+
+            100% {
+                transform: perspective(100vw) rotateX(0deg) scaleX(1);
+                top: 16%;
+                opacity: 1;
+            }
+        }
+
+        @keyframes SkewText4 {
+            0% {
+                transform: perspective(2vw) rotateX(-30deg) scaleX(0.2);
+                top: 35%;
+                opacity: 0;
+            }
+
+            90% {
+                transform: perspective(2vw) rotateX(-20deg) scaleX(0.3);
+                top: 31%;
+                opacity: 1;
+            }
+
+            100% {
+                transform: perspective(100vw) rotateX(0deg) scaleX(1);
+                top: 19%;
+                opacity: 1;
+            }
+        }
+
+        @keyframes SkewText5 {
+            0% {
+                transform: perspective(2vw) rotateX(-30deg) scaleX(0.2);
+                top: 37%;
+                opacity: 0;
+            }
+
+            90% {
+                transform: perspective(2vw) rotateX(-20deg) scaleX(0.4);
+                top: 27%;
+                opacity: 1;
+            }
+
+            100% {
+                transform: perspective(100vw) rotateX(0deg) scaleX(1);
+                top: 22%;
+                opacity: 1;
+            }
+        }
+
+        .greet {
+            position: relative;
+            height: 100%;
+        }
+
+        .greet p {
+            color: white;
+            position: absolute;
+            z-index: 1;
+            text-align: center;
+            top: 40%;
+            opacity: 0;
+            width: 100%;
+        }
+
+        .greet p:nth-child(1) {
+            animation: SkewText1 1.5s cubic-bezier(.65, .34, .83, .25) 0.2s forwards;
+        }
+
+        .greet p:nth-child(2) {
+            animation: SkewText2 1.5s cubic-bezier(.65, .34, .83, .25) 0.7s forwards;
+        }
+
+        .greet p:nth-child(3) {
+            animation: SkewText3 1.5s cubic-bezier(.65, .34, .83, .25) 1.2s forwards;
+        }
+
+        .greet p:nth-child(4) {
+            animation: SkewText4 1.5s cubic-bezier(.65, .34, .83, .25) 1.7s forwards;
+        }
+
+        .greet p:nth-child(5) {
+            animation: SkewText5 1.5s cubic-bezier(.65, .34, .83, .25) 2.2s forwards;
+        }
+
+        @keyframes SnakeIntro {
+            0% {
+                width: 120%;
+                opacity: 0;
+            }
+
+            10% {
+                width: 95%;
+                opacity: 0.3;
+            }
+
+            20% {
+                width: 90%;
+                opacity: 0.6;
+            }
+
+            30% {
+                width: 85%;
+                opacity: 1;
+            }
+
+            100% {
+                width: 50%;
+                opacity: 1;
+            }
+        }
+
+        @keyframes SnakeRotate {
+            0% {
+                rotate: 0deg;
+            }
+
+            100% {
+                rotate: 360deg;
+            }
+        }
+
+        .snake-intro {
+            animation: SnakeIntro 1s linear forwards;
+        }
+
+        .snake {
+            translate: -50% -50%;
+            position: absolute;
+            top: 30%;
+            left: 50%;
+        }
+
+        .snake-rotate {
+            animation: SnakeRotate 10s linear infinite;
+        }
+
+        .c3-intermission-cont h1 {
+            color: goldenrod;
+        }
+
+        .c3-intermission-cont p {
+            font-size: 2.5vh;
+            color: #AFAFAF;
+        }
+
+        @keyframes RunningRabbit {
+            0% {
+                translate: -150% -50%;
+            }
+
+            100% {
+                translate: 150% -50%;
+            }
+        }
+
+        .running-rabbit {
+            animation: RunningRabbit 2.7s linear forwards;
+        }
+
+        @keyframes BookShow {
+            0% {
+                translate: 0% 300%;
+                scale: 4;
+                opacity: 0;
+            }
+
+            25% {
+                translate: 0% 300%;
+                scale: 3;
+                opacity: 0.1;
+            }
+
+            50% {
+                translate: 0% 300%;
+                scale: 2;
+                opacity: 0.2;
+            }
+
+            75% {
+                translate: 0% 300%;
+                scale: 0.92;
+                opacity: 1;
+            }
+
+            100% {
+                translate: 0% 300%;
+                scale: 1;
+                opacity: 1;
+            }
+        }
+
+        .book-show {
+            animation: BookShow 1s cubic-bezier(.88, .78, .76, .94) forwards;
+        }
+
+        @keyframes BookMove {
+            0% {
+                translate: 0% 300%;
+            }
+
+            100% {
+                translate: 0% 60%;
+            }
+        }
+
+        .book-move {
+            translate: 0% 300%;
+            scale: 1;
+            opacity: 1;
+            animation: BookMove 1.8s cubic-bezier(.18, .22, .1, .83) forwards;
+        }
+
+        @keyframes BottleMove {
+            0% {
+                translate: 0% 0%;
+            }
+
+            100% {
+                translate: 0% 300%;
+            }
+        }
+
+        .bottle-move {
+            top: 45%;
+            opacity: 1;
+            animation: BottleMove 1.4s ease-out forwards;
+        }
+
+        @keyframes BottleShake {
+            0% {
+                rotate: 0deg;
+            }
+
+            10% {
+                rotate: -15deg;
+            }
+
+            30% {
+                rotate: 10deg;
+            }
+
+            50% {
+                rotate: -15deg;
+            }
+
+            70% {
+                rotate: 5deg;
+            }
+
+            90% {
+                rotate: -5deg;
+            }
+
+            100% {
+                rotate: 0deg;
+            }
+        }
+
+        .c1-bottle-center {
+            top: 45%;
+            opacity: 1;
+            translate: 0% 300%;
+        }
+
+        .bottle-shake {
+            animation: BottleShake 1.4s linear forwards;
+        }
+    </style>
+</head>
+
+<script>
+    var showTryAgain = [
+        { opacity: 0 },
+        { opacity: 1, easing: 'ease-in', offset: .3 },
+        { opacity: 1, offset: .7 },
+        { opacity: 0, easing: 'ease-out' }
+    ];
+    var countDownDate = new Date("2023-12-22 14:00:00").getTime();
+
+    function chapter8() {
+        window.location.hash = 'fe5d';
+        document.getElementById("c8").style.display = "block";
+        document.getElementById("coffee").classList.add("book-drop-down");
+        setTimeout(() => {
+            document.getElementById('c8-story-text').classList.add("story-txt-fadein");
+            document.getElementById('c8-key').classList.add("fade-in-slow");
+            document.getElementById("c8-key").onkeyup = (event) => {
+                if (event.keyCode === 13) {
+                    event.preventDefault();
+                    event.target.blur();
+                    window.scrollTo(0, 0);
+                    document.body.scrollTop = 0;
+                    answer = event.target.value.toLowerCase().replace(' ', '');
+                    if (answer == 'depeche' || answer == 'depechecoffee') {
+                        document.getElementById("c8-key").onkeyup = null;
+                        document.getElementById("c8").classList.add('fade-out-screen');
+                        setTimeout(() => {
+                            location.href = 'https://www.kult.lt/varom-renginiai/depeche-mode-talinas/';
+                        }, 1600);
+                    }
+                    else {
+                        event.target.value = "";
+                        document.getElementById("c8-try-again").animate(showTryAgain, 2000);
+                    }
+                }
+            }
+        }, 500);
+    }
+
+    function outro() {
+        window.location.hash = '1985';
+        document.getElementById("outro").style.display = "block";
+        snake = document.getElementById("snake");
+        setTimeout(() => {
+            snake.style.display = "block";
+            snake.classList.add('snake');
+            snake.classList.add('snake-intro');
+            setTimeout(() => {
+                document.getElementById("outro-text-h").classList.add('story-txt-fadein');
+                setTimeout(() => {
+                    document.getElementById("outro-text-d").classList.add('story-txt-fadein');
+                    setTimeout(() => {
+                        document.getElementById("outro-text-g").classList.add('story-txt-fadein');
+                        setTimeout(() => {
+                            document.getElementById('outro-btn').classList.add('story-txt-fadein');
+                            document.getElementById('outro-btn').onclick = () => {
+                                document.getElementById('outro-btn').onclick = null;
+                                document.getElementById("outro").classList.add('fade-out-screen');
+                                setTimeout(() => {
+                                    document.getElementById("outro").style.display = "none";
+                                    chapter8();
+                                }, 1600);
+                            }
+                        }, 2000);
+
+                    }, 3000);
+                }, 2000);
+            }, 1500);
+            setTimeout(() => {
+                snake.style.opacity = 1;
+                snake.style.width = '50%';
+                snake.classList.remove('snake-intro');
+                snake.classList.add('snake-rotate');
+
+            }, 1000);
+        }, 800);
+
+    }
+
+    function chapter7() {
+        window.location.hash = '902b';
+        document.getElementById("c7").style.display = "block";
+        document.getElementById("ouroboros").classList.add("book-drop-down");
+        setTimeout(() => {
+            document.getElementById('c7-story-text').classList.add("story-txt-fadein");
+            document.getElementById('c7-key').classList.add("fade-in-slow");
+            document.getElementById("c7-key").onkeyup = (event) => {
+                if (event.keyCode === 13) {
+                    event.preventDefault();
+                    event.target.blur();
+                    window.scrollTo(0, 0);
+                    document.body.scrollTop = 0;
+                    if (event.target.value.toLowerCase().replace(' ', '') == 'neverending') {
+                        document.getElementById("c7-key").onkeyup = null;
+                        document.getElementById("c7").classList.add('fade-out-screen');
+                        setTimeout(() => {
+                            document.getElementById("c7").style.display = "none";
+                            outro();
+                        }, 1600);
+                    }
+                    else {
+                        event.target.value = "";
+                        document.getElementById("c7-try-again").animate(showTryAgain, 2000);
+                    }
+                }
+            }
+        }, 500);
+    }
+
+    function newIntro() {
+        window.location.hash = '273e';
+        document.getElementById("new-splash").style.display = "block";
+        document.getElementById("new-splash").classList.add("fade-in");
+        setTimeout(() => {
+            document.getElementById("new-game").classList.add("fade-in");
+            setTimeout(() => {
+                document.getElementById("new-game").onclick = (event) => {
+                    event.currentTarget.onclick = null;
+                    document.getElementById("new-splash").classList.add("fade-out-screen");
+                    setTimeout(() => {
+                        document.getElementById("new-splash").style.display = 'none';
+                        chapter7();
+                    }, 1600);
+                }
+            }, 1600);
+        }, 600);
+    }
+
+    function intermission6() {
+        document.getElementById("c6-intermission").style.display = 'block';
+        document.getElementById("tree").classList.add('tree-drop');
+        setTimeout(() => {
+            document.getElementById("tree-balls").classList.add('tree-drop');
+            document.getElementById("tree-star").classList.add('star-drop');
+
+            setTimeout(() => {
+                document.getElementById("tree-lights").classList.add('lights-drop');
+                gift = document.getElementById("gift");
+                gift.classList.add('gift-drop');
+                gift.onclick = () => {
+                    gift.onclick = null;
+                    document.getElementById("christmas-tree").classList.add('fade-out');
+                    setTimeout(() => {
+                        document.getElementById("christmas-tree").style.display = 'none';
+                        gift.classList.add('gift-ready');
+                        gift.classList.remove('gift-start');
+                        gift.classList.add('transform-gift');
+                        document.getElementById('gift-top').classList.add('transform-gift-top');
+                        setTimeout(() => {
+                            gift.classList.add('gift-center');
+                            gift.classList.remove('transform-gift');
+                            gift.classList.add('gift-wiggle');
+                            setTimeout(() => {
+                                document.getElementById("gift-top").classList.add('gift-top-open');
+                                setTimeout(() => {
+                                    document.getElementById("greet").style.display = 'block';
+                                    document.getElementById("greet").classList.add('greet');
+                                    setTimeout(() => {
+                                        document.getElementById('c6-btn').style.display = 'block';
+                                        document.getElementById('c6-btn').classList.add('story-txt-fadein');
+                                        setTimeout(() => {
+                                            document.getElementById('c6-btn').onclick = (event) => {
+                                                event.currentTarget.onclick = null;
+                                                document.getElementById("c6-intermission").classList.add("fade-out-screen");
+                                                setTimeout(() => {
+                                                    document.getElementById("c6-intermission").style.display = "none";
+                                                    newIntro();
+                                                }, 1600);
+                                            }
+                                        }, 1200);
+                                    }, 5000);
+                                    //document.getElementById('container').classList.add('fade-out');
+                                }, 2000);
+                            }, 1500);
+                        }, 1000);
+                    }, 1000);
+                }
+            }, 700);
+
+        }, 700);
+    }
+
+    sound_playing = false;
+
+    function chapter6sound() {
+        if (!sound_playing) {
+            sound_playing = true;
+            document.getElementById('morse-sound').play();
+            container = document.getElementById('c6-container');
+            soundBox = document.getElementById('sound-box');
+            setTimeout(function () {
+                document.getElementById("morse-button").classList.add("circle-pulse");
+                document.getElementById("morse-c1").classList.add("pulse_anim1");
+                document.getElementById("morse-c2").classList.add("pulse_anim2");
+                setTimeout(() => {
+                    document.getElementById("morse-button").classList.remove("circle-pulse");
+                    document.getElementById("morse-c1").classList.remove("pulse_anim1");
+                    document.getElementById("morse-c2").classList.remove("pulse_anim2");
+                    soundBox.style.opacity = 1;
+                    soundBox.classList.remove('fade-in');
+                    soundBox.classList.add('fade-out');
+                    setTimeout(() => {
+                        soundBox.style.display = 'none';
+                        soundBox.style.opacity = 0;
+                        soundBox.classList.remove('fade-out');
+                        container.classList.remove('fade-out');
+                        container.style.opacity = 0;
+                        container.style.display = 'block';
+                        container.classList.add('fade-in');
+                        setTimeout(() => {
+                            container.style.opacity = 1;
+                            container.classList.remove('fade-in');
+                            sound_playing = false;
+                        }, 800);
+                    }, 800);
+                }, 11000);
+            }, 300);
+        }
+    }
+
+    function chapter6() {
+        window.location.hash = 'c1df';
+        document.getElementById("c6").style.display = "block";
+        document.getElementById("music").classList.add("img-drop-down");
+        function playSound() {
+            document.getElementById('play-sound').onclick = null;
+            container = document.getElementById('c6-container');
+            container.classList.add('fade-out');
+            setTimeout(() => {
+                container.style.display = 'none';
+                soundBox = document.getElementById('sound-box');
+                soundBox.style.display = 'block';
+                soundBox.classList.add('fade-in');
+                document.getElementById('play-sound').onclick = playSound;
+            }, 800);
+        }
+        setTimeout(() => {
+            document.getElementById('c6-story-text').classList.add("story-txt-fadein");
+            document.getElementById('c6-key').classList.add("fade-in-slow");
+            document.getElementById("c6-key").onkeyup = (event) => {
+                if (event.keyCode === 13) {
+                    event.preventDefault();
+                    event.target.blur();
+                    window.scrollTo(0, 0);
+                    document.body.scrollTop = 0;
+                    if (event.target.value.toLowerCase().replace(' ', '') == 'biscuits') {
+                        document.getElementById("c6-key").onkeyup = null;
+                        document.getElementById("c6").classList.add('fade-out-screen');
+                        setTimeout(() => {
+                            document.getElementById("c6").style.display = "none";
+                            intermission6();
+                        }, 2400);
+                    }
+                    else {
+                        event.target.value = "";
+                        document.getElementById("c6-try-again").animate(showTryAgain, 2000);
+                    }
+                }
+            }
+            setTimeout(() => {
+                document.getElementById('play-sound').onclick = playSound;
+            }, 800);
+        }, 500);
+    }
+
+    function intermission5() {
+        document.getElementById("c5-intermision").style.display = 'block';
+        document.getElementById("c5-intermision-container").style.display = 'block';
+        document.getElementById("c5-intermision-container").classList.add('fade-in');
+        setTimeout(() => {
+            document.getElementById("rabbit-anim").classList.add('running-rabbit');
+            setTimeout(() => {
+                setTimeout(() => {
+                    document.getElementById("c5-intermision-container").classList.add('fade-out-screen');
+                    setTimeout(() => {
+                        document.getElementById("c5-intermision").style.display = "none";
+                        chapter6();
+                    }, 1600);
+                }, 1000);
+            }, 3000);
+        }, 1500);
+    }
+
+    function chapter5() {
+        window.location.hash = 'ac347';
+        document.getElementById("c5").style.display = "block";
+        document.getElementById("rabbit").classList.add("book-drop-down");
+        setTimeout(() => {
+            document.getElementById('c5-story-text').classList.add("story-txt-fadein");
+            document.getElementById('c5-key').classList.add("fade-in-slow");
+            document.getElementById("c5-key").onkeyup = (event) => {
+                if (event.keyCode === 13) {
+                    event.preventDefault();
+                    event.target.blur();
+                    window.scrollTo(0, 0);
+                    document.body.scrollTop = 0;
+                    if (event.target.value.toLowerCase().replace(' ', '') == '11') {
+                        document.getElementById("c5-key").onkeyup = null;
+                        document.getElementById("c5").classList.add('fade-out-screen');
+                        setTimeout(() => {
+                            document.getElementById("c5").style.display = "none";
+                            intermission5();
+                        }, 1600);
+                    }
+                    else {
+                        event.target.value = "";
+                        document.getElementById("c5-try-again").animate(showTryAgain, 2000);
+                    }
+                }
+            }
+        }, 500);
+    }
+
+    function intermission4() {
+        document.getElementById('c4-intermission').style.display = 'block';
+        document.getElementById('cat').classList.add('c4-cat-anim');
+        setTimeout(() => {
+            document.getElementById("c4-msg").style.display = 'block';
+            document.getElementById("c4-msg").classList.add("story-txt-fadein");
+            setTimeout(() => {
+                document.getElementById("c4-btn").style.display = 'block';
+                document.getElementById("c4-btn").classList.add("story-txt-fadein");
+                setTimeout(() => {
+                    document.getElementById("c4-btn").onclick = (event) => {
+                        event.currentTarget.onclick = null;
+                        document.getElementById("c4-intermission").classList.add("fade-out-screen");
+                        setTimeout(() => {
+                            document.getElementById("c4-intermission").style.display = "none";
+                            chapter5();
+                        }, 1600);
+                    }
+                }, 800);
+            }, 1200);
+        }, 2000);
+    }
+
+    function chapter4() {
+        window.location.hash = '1b64';
+        document.getElementById("c4").style.display = "block";
+        document.getElementById("map").classList.add("book-drop-down");
+        setTimeout(() => {
+            document.getElementById('c4-story-text').classList.add("story-txt-fadein");
+            document.getElementById('c4-key').classList.add("fade-in-slow");
+            document.getElementById("c4-key").onkeyup = (event) => {
+                if (event.keyCode === 13) {
+                    event.preventDefault();
+                    event.target.blur();
+                    window.scrollTo(0, 0);
+                    document.body.scrollTop = 0;
+                    answer = event.target.value.toLowerCase().replace(' ', '');
+                    if (answer == 'cat' || answer == 'acat' || answer == 'ktn' || answer == 'kitty') {
+                        document.getElementById("c4-key").onkeyup = null;
+                        document.getElementById("c4").classList.add('fade-out-screen');
+                        setTimeout(() => {
+                            document.getElementById("c4").style.display = "none";
+                            intermission4();
+                        }, 1600);
+                    }
+                    else {
+                        event.target.value = "";
+                        document.getElementById("c4-try-again").animate(showTryAgain, 2000);
+                    }
+                }
+            }
+        }, 500);
+    }
+
+    function intermision3() {
+        screen = document.getElementById('c3-intermission');
+        screen.style.display = 'block';
+        container = document.getElementById('c3-intermission-cont');
+        container.style.display = 'block';
+        container.classList.add('fade-to-white');
+        setTimeout(() => {
+            wolf = document.getElementById('o-wolf');
+            wolf.classList.add('img-shrink');
+            wolf.style.display = 'block';
+            setTimeout(() => {
+                wolf.style.display = 'none';
+                castle = document.getElementById('o-castle');
+                castle.classList.add('img-shrink');
+                castle.style.display = 'block';
+                setTimeout(() => {
+                    castle.style.display = 'none';
+                    book = document.getElementById('o-book');
+                    book.classList.add('img-shrink');
+                    book.style.display = 'block';
+                    setTimeout(() => {
+                        container.style.background = 'white';
+                        container.classList.remove('fade-to-white');
+                        container.classList.add('fade-to-black');
+                        setTimeout(() => {
+                            document.getElementById('c3-intermission-cont').style.display = 'none';
+                            document.getElementById("c3-msg").style.display = "block";
+                            document.getElementById("c3-msg").classList.add('msg-txt-fade');
+                            setTimeout(() => {
+                                screen.style.display = 'none';
+                                chapter4();
+                            }, 6000);
+                        }, 1000);
+                    }, 4000);
+                }, 4000);
+            }, 4000);
+        }, 800);
+    }
+
+    function chapter3() {
+        window.location.hash = '77de';
+        document.getElementById("c3").style.display = "block";
+        document.getElementById("book").classList.add('book-show');
+        setTimeout(() => {
+            document.getElementById("book").style.opacity = 1;
+            document.getElementById("book").classList.remove('book-show');
+            document.getElementById("book").classList.add('book-move');
+        }, 1700);
+        setTimeout(() => {
+            document.getElementById('c3-story-text').classList.add("story-txt-fadein");
+            document.getElementById('c3-key').classList.add("fade-in-slow");
+            document.getElementById("c3-key").onkeyup = (event) => {
+                if (event.keyCode === 13) {
+                    event.preventDefault();
+                    event.target.blur();
+                    window.scrollTo(0, 0);
+                    document.body.scrollTop = 0;
+                    if (event.target.value.toLowerCase().replace(' ', '') == 'friendship') {
+                        document.getElementById("c3-key").onkeyup = null;
+                        document.getElementById("c3").classList.add('fade-out-screen');
+                        setTimeout(() => {
+                            document.getElementById("c3").style.display = "none";
+                            intermision3();
+                        }, 1600);
+                    }
+                    else {
+                        event.target.value = "";
+                        document.getElementById("c3-try-again").animate(showTryAgain, 2000);
+                    }
+                }
+            }
+        }, 2800);
+    }
+    function chapter2() {
+        window.location.hash = 'da4b';
+        document.getElementById("c2").style.display = "block";
+        const minHand = document.querySelector('#minHand');
+        const hourHand = document.querySelector('#hourHand');
+        const coords = [-1, 2];
+        swipeArea = document.getElementById("clock-panel");
+        h_value = 0;
+        m_value = 0;
+        const swipeDelay = 700;
+        let lastSwipeTime = 0;
+    
+        function handleTouchStart(event) {
+            startY = event.touches[0].clientY;
+        }
+
+        function handleTouchEnd(event) {
+            const now = Date.now();
+            if (now - lastSwipeTime < swipeDelay) {
+                console.log('Swipe ignored. Too soon.');
+                return;
+            }
+
+            lastSwipeTime = now;
+            endY = event.changedTouches[0].clientY;
+            const swipeDistance = startY - endY;
+            if (swipeDistance < 0) {
+                m_value = m_value + Math.floor(-swipeDistance / 10);
+                if (m_value > 360) {
+                    m_value = m_value - 360;
+                }
+                clock();
+            }
+            else {
+                h_value = h_value + Math.floor(swipeDistance / 10);
+                if (h_value > 360) {
+                    h_value = h_value - 360;
+                }
+                clock();
+            }
+
+            // Check if the swipe is upwards and its intensity
+            if (swipeDistance > 0) {
+                console.log('Swiped Up! Distance:', swipeDistance);
+
+            }
+        }
+
+        swipeArea.addEventListener('touchstart', handleTouchStart, false);
+        swipeArea.addEventListener('touchend', handleTouchEnd, false);
+        // setInterval(() => {
+        //     cur_h++;
+        //     if (cur_h == 12)
+        //         cur_h = 0;
+        //     clock();
+        // }, 1000);
+        function clock() {
+            //Angle of rotation, check the docs/ folder for the calculation detail
+            minR = m_value;
+            hrR = h_value;
+            
+            function checkTime() {
+                const time = new Date();
+                h = time.getHours();
+                if (h > 12)
+                    h = h - 12;
+
+                const min = Math.round(time.getMinutes() / 5);
+                cur_h = Math.round(h_value / 360 * 12);
+                cur_m = Math.round(m_value / 360 * 12);
+                if (cur_h == h && cur_m == min) {
+                    minR = time.getMinutes() * 6;
+                    hrR = h * (360/12);
+                    setTimeout(() => {
+                        alert('You got it!');
+                    }, 700);
+                }
+            }
+            checkTime();
+            rotate(minHand, minR);
+            rotate(hourHand, hrR);
+        }
+
+        // Rotate clock hands
+        function rotate(hand, angle) {
+            const [xAxis, yAxis] = coords;
+            //hand.setAttribute('transform-origin', 'top left');
+            hand.setAttribute('transform', `rotate(${angle})`);
+        }
+
+        clock();
+    }
+
+    function chapter1_intermission() {
+        document.getElementById("c1-interm").style.display = "block";
+        document.getElementById("c1-intern-img").classList.add("fade-in");
+        setTimeout(() => {
+            document.getElementById("c1-interm").classList.add('fade-out-screen');
+            setTimeout(() => {
+                document.getElementById("c1-interm").style.display = "none";
+                chapter2();
+            }, 1600);
+        }, 3000);
+    }
+
+    function chapter1() {
+        window.location.hash = '356a';
+        document.getElementById("c1").style.display = "block";
+        document.getElementById("c1-img").classList.add("c1-house-drop");
+        document.getElementById("c1-story-text").classList.add("story-txt-fadein");
+        setTimeout(() => {
+            document.getElementById("intro-btn").classList.add("fade-in");
+            document.getElementById("intro-btn").onclick = function start(params) {
+                params.currentTarget.onclick = null;
+                document.getElementById("c1").classList.add('fade-out-screen');
+                setTimeout(() => {
+                    document.getElementById("c1").style.display = "none";
+                    chapter1_intermission();
+                }, 1600);
+            }
+        }, 2000);
+
+    }
+
+    function splash_ready() {
+        btn_splash = document.getElementById("btn-splash");
+        btn_splash.classList.add("story-txt-fadein");
+        btn_splash.onclick = function start(params) {
+            params.currentTarget.onclick = null;
+            document.getElementById("splash").classList.add("fade-out-screen");
+            setTimeout(() => {
+                document.getElementById("splash").style.display = "none";
+                intro();
+            }, 1600);
+        }
+    }
+
+
+    window.onload = function () {
+        document.ontouchmove = function (e) {
+            e.preventDefault();
+        }
+        if (window.location.hash) {
+            var hash = window.location.hash.substring(1);
+            if (hash === '356a') {
+                chapter1();
+            }
+            else if (hash === 'da4b') {
+                chapter2();
+            }
+            else if (hash === '77de') {
+                chapter3();
+            }
+            else if (hash === '1b64') {
+                chapter4();
+            }
+            else if (hash === 'ac347') {
+                chapter5();
+            }
+            else if (hash === 'c1df') {
+                chapter6();
+            }
+            else if (hash === '273e') {
+                newIntro();
+            }
+            else if (hash === '902b') {
+                chapter7();
+            }
+            else if (hash === '1985') {
+                outro();
+            }
+            else if (hash === 'fe5d') {
+                chapter8();
+            }
+            else {
+                splash_ready();
+            }
+        } else {
+            // var now = new Date().getTime();
+            // var distance = countDownDate - now;
+            // if (distance > 0)
+            //     splash_countdown();
+            // else
+            chapter1();
+        }
+    };
+
+</script>
+<div class="content" style="background:rgb(250, 240, 229);">
+    <div id="splash" class="screen" style="background:rgb(250, 240, 229); display: none;">
+        <div style="width: 60%;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        padding-top: 30%;">
+            <img src="m_c.gif" style="width: 100%;"></img>
+            <div style="width: 30%;
+            margin-left: 15%;
+            height: 4vh;
+            background-color: rgb(250, 240, 229);
+            position: absolute;
+            margin-top: -3vh;"></div>
+        </div>
+        <h1 id="btn-splash"
+            style="color:rgb(234, 83, 90); text-align: center; font-size: 4vh; font-weight: bold; font-family: Sniglet; opacity: 0;">
+            Begin the story</h1>
+    </div>
+    <div id="c1" class="screen" style="display: none;">
+        <div style="width:100%; height: 20%;">
+            <img id="c1-img" src="c_build.png"
+                style="z-index: 1; width: 30%;display: block;margin-left: auto;margin-right: auto;position: relative;"></img>
+        </div>
+        <div id="c1-story-text" class="story-txt" style="position: relative;top: 14%;">
+            <h1>Chapter 1: Place</h1>
+            <p>Every story needs a cat and a place.<br />
+                Now we begin our story from where all our stories started.
+            <p>
+        </div>
+        <div id="intro-btn" style="
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 40%;
+            color:rgb(234, 83, 90);
+            opacity: 0;
+            height: 6vh;">
+            <span style="font-size: 2.4vh;">I'm at the place</span>
+            <span style="font-size: 5vh; padding-left: 2vw;">&#x27BC;</span>
+        </div>
+    </div>
+    <div id="c1-interm" class="screen" style="display: none;">
+        <img id="c1-intern-img" src="c_hi.gif" style="width: 70%;
+        opacity: 0;
+        margin: auto;
+        position: relative;
+        padding-top: 45%;
+        display: block;"></img>
+    </div>
+    <div id="c2" class="screen" style="display: none;">
+        <p style="padding-top: 3vh;">Time of Christmas and joy is fast approaching. Let's set the time correctly.</p>
+        <div id="clock-panel" style="height: 80vh; display: flex; justify-content: center;">
+            <svg class="clock" style="position: absolute;
+            width: 14vh;
+            height: 14vh;
+            top: 42.7vh;
+            left: 15.8vh;" version="1.1" x="0px" y="0px" viewBox="0 0 708.25 709.24"
+                style="position:absolute; width: 13vh;
+                height: 13vh;
+                top: 43.5vh;
+                left: 16.5vh;" xml:space="preserve">
+                <g id="hourHand" style="transform-origin: center; transition: transform 0.7s ease;">
+                    <linearGradient id="linear-gradient" gradientUnits="userSpaceOnUse" x1="2373.8569" y1="-975.8845"
+                        x2="2579.5" y2="-975.8845"
+                        gradientTransform="matrix(3.467851e-03 -1 1 3.467851e-03 1321.8618 2747.7175)">
+                        <stop offset="0.3988" style="stop-color:#A700E9" />
+                        <stop offset="1" style="stop-color:#FF1528" />
+                    </linearGradient>
+                    <path
+                        d="M351.66,197.87c-0.99,0.01-6.19,0.3-9.16,4.91c-0.01,0.02-0.86,1.76-3.02,2.27
+                             c-0.47,0.11-0.71,0.4-0.7,0.82c0.05,1.53,4,4.98,9.52,5.96c-0.47,1.68-4.28,14.88-7.62,16.69l-6.11,1.09l0.09,0.2
+                             c0.02,0.04,1.76,3.6,5.36,6.82c0.14,0.41,1.31,4.02-0.26,5.94c-0.87,1.06-2.43,1.43-4.66,1.1c-0.06-0.01-5.63-0.5-8.89,5.11
+                             c-0.47,0.81-0.88,1.56-1.27,2.28c-2.3,4.22-3.7,6.77-10.16,7.93l-0.08,0.01l-0.04,0.07c-0.02,0.03-0.38,0.76,0.04,1.79
+                             c0.44,1.08,1.83,2.65,5.96,4.02c0.14,1.17,1.64,11.32,10.58,13.17c-0.17,1.24-1.12,8.96,1.77,10.29
+                             c1.78,0.82,4.62-1.01,8.43-5.42c1.16,0.97,10.11,8.8,9.46,19.39c-0.52,8.49-6.94,16.53-19.08,23.9l-0.08,0.05l0,0.09
+                             c0,0.12,0.06,2.89,1.96,4.68c1.07,1.01,2.51,1.49,4.28,1.43c0.15,1.2,1.29,9.01,6.46,10.96c0.2,0.3,1.45,2.26,0.74,3.7
+                             c-0.5,1.03-1.88,1.6-4.1,1.69l-0.34,0.01l0.23,0.26c0.03,0.03,1.81,2.03,5.46,3.68c-1.7,1.87-2.75,4.36-2.76,7.09
+                             c-0.02,5.85,4.72,10.62,10.56,10.64c5.85,0.02,10.62-4.72,10.64-10.56c0.01-2.73-1.02-5.22-2.71-7.11
+                             c3.66-1.62,5.46-3.61,5.48-3.64l0.23-0.26l-0.34-0.02c-2.22-0.11-3.59-0.68-4.09-1.72c-0.7-1.45,0.56-3.4,0.77-3.7
+                             c5.18-1.92,6.38-9.72,6.53-10.92c1.77,0.07,3.21-0.4,4.29-1.4c1.91-1.77,1.99-4.55,2-4.67l0-0.09l-0.08-0.05
+                             c-12.09-7.45-18.45-15.54-18.91-24.03c-0.57-10.59,8.43-18.36,9.59-19.32c3.78,4.44,6.61,6.28,8.39,5.48
+                             c2.89-1.3,2-9.04,1.84-10.28c8.95-1.79,10.51-11.93,10.66-13.1c4.14-1.34,5.55-2.9,5.99-3.98c0.16-0.38,0.21-0.71,0.21-0.99
+                             c0-0.48-0.15-0.78-0.16-0.8l-0.04-0.07l-0.08-0.02c-6.46-1.21-7.83-3.76-10.11-8c-0.39-0.73-0.79-1.48-1.26-2.29
+                             c-3.23-5.63-8.8-5.18-8.87-5.17c-2.22,0.31-3.79-0.07-4.65-1.14c-1.55-1.93-0.36-5.53-0.22-5.94c3.63-3.19,5.39-6.75,5.41-6.78
+                             l0.1-0.2l-6.1-1.13c-3.33-1.83-7.04-15.05-7.5-16.74c5.53-0.94,9.5-4.36,9.56-5.89c0.02-0.41-0.23-0.71-0.7-0.83
+                             c-2.15-0.52-2.99-2.27-3.01-2.31c-2.92-4.61-8.12-4.93-9.11-4.95l-0.96-33.04l-2.08-0.01l-2.08-0.01L351.66,197.87z
+                              M360.05,359.91c-0.01,3.2-2.62,5.79-5.82,5.78c-3.2-0.01-5.79-2.62-5.78-5.82c0.01-2.43,1.52-4.51,3.65-5.36
+                             c0.63,0.11,1.29,0.21,1.99,0.28l0.18,0.02l0.18-0.02c0.69-0.06,1.35-0.15,1.99-0.26C358.56,355.39,360.06,357.48,360.05,359.91z
+                              M354.46,310.7c7.39,9.93,10.01,17.28,7.8,21.86c-2.05,4.24-7.71,4.46-7.76,4.46l-0.16,0l-0.16-0.01c-0.06,0-5.71-0.26-7.73-4.51
+                             c-2.18-4.59,0.49-11.93,7.95-21.81l0.03-0.04L354.46,310.7z M337.39,267.08c-2.34,0.14-4.36,2.11-6.01,5.84
+                             c-1.01-0.9-6.21-5.88-5.78-11.9c0.28-4.08,3.07-7.8,8.25-11.02c0.09-0.04,9.42-3.7,14.42,3.65l0.02,0.03
+                             c0.04,0.04,4.03,3.87,4.01,9.37c0,0.02,0,0.04,0,0.06c-0.03,3.83-1.97,7.55-5.76,11.07C345.82,273.01,341.8,266.81,337.39,267.08
+                             z M375.42,250.14c5.17,3.27,7.93,7,8.18,11.08c0.37,6.01-4.85,10.96-5.87,11.86c-1.63-3.74-3.63-5.72-5.98-5.88
+                             c-4.41-0.3-8.47,5.87-9.19,7.02c-3.77-3.54-5.68-7.28-5.68-11.11c0-0.02,0-0.04,0-0.06c0.02-5.5,4.03-9.3,4.07-9.34l0.02-0.03
+                             C365.95,246.5,375.02,249.98,375.42,250.14z M361.87,231.63c1.02,0.13,1.85,0.79,2.45,1.94c2.79,5.31-9.49,14.51-9.61,14.61
+                             l-0.07,0.05l-0.09,25.8l0.02,0.07c1.57,3.42,5.4,6.2,6.32,6.84c-2.13,1.55-6.18,7.48-6.36,7.74l-0.03,0.04l-0.03-0.04
+                             c-0.18-0.26-4.19-6.22-6.31-7.78c0.93-0.63,4.77-3.39,6.37-6.8l0.1-25.87l-0.07-0.05c-0.12-0.09-12.34-9.38-9.51-14.67
+                             c0.61-1.15,1.44-1.79,2.46-1.92c3.02-0.38,6.84,3.77,6.87,3.81l0.29,0.31l0.29-0.31C355.01,235.35,358.85,231.23,361.87,231.63z
+                              M354.76,212.31l1.94,0.01c-0.58,4.56,3.57,10.91,4.4,12.13l-6.39,1.67l-6.38-1.71c0.84-1.21,5.03-7.54,4.49-12.1L354.76,212.31z" />
+                </g>
+                <g id="minHand" style="transform-origin: center; transition: transform 0.7s ease;">
+                    <path
+                        d="M354.65,111.28c1.5,19.79-6.71,42.25-6.71,42.25c6.29-1.17,5.71,1.83,5.71,1.83
+                         c4.52,16.35-12.45,54.22-12.45,54.22c-2.02,14.41,2.33,19.46,2.33,19.46c-9.8,3.91,0.42,5.7,0.42,5.7
+                         c28.39,4.06,11.05,28.83,11.05,28.83c-20.17,21.69-10.43,48.13-10.43,48.13l-3.72,1.09c2.62,0.45,2.6,5.28,2.6,5.28
+                         c-1.97,1.97-1.32,3.07-1.32,3.07c2.4,1.11,1.3,3.96,1.3,3.96c-4.61,6.79,0.84,9.67,0.84,9.67l-1.1,1.75
+                         c-3.67,5.92,2.06,12.86,4.56,15.45c-2.18,1.93-3.56,4.75-3.57,7.89c-0.02,5.85,4.72,10.62,10.56,10.64
+                         c5.85,0.02,10.62-4.72,10.64-10.56c0.01-3.88-2.07-7.28-5.18-9.14c8.47-5.42,8.14-18.3,8.14-18.3
+                         c-4.56-6.32,3.54-12.63,3.54-12.63s-11.34-7.59-8.04-13.13c3.3-5.54,2.02-13.37,0.94-18.91c-1.07-5.54,5.05-8.14,4.19-9.88
+                         c-0.86-1.75-1.09-1.09-4.79-5.88s-1.29-7.18-1.29-7.18c12.74-16.92-10.56-39.61-10.56-39.61c-12.8-25.29,11.46-27.54,11.46-27.54
+                         c-4.72-1.94-2.44-7.87-2.37-8.06c-5.03,1.96-5.46-1.53-5.46-1.53l2.3-33.13l5.68-0.41c0,0,0,0-3.03-7.2
+                         c-3.03-7.21-3.91-68.56-3.91-68.56l-2.26-0.01L354.65,111.28z M360.57,359.91c-0.01,3.2-2.62,5.79-5.82,5.78
+                         c-3.2-0.01-5.79-2.62-5.78-5.82c0.01-3.2,2.62-5.79,5.82-5.78C357.99,354.1,360.58,356.71,360.57,359.91z M362.03,333.89
+                         c4.31,16.87-12.29,14.56-12.29,14.56c-7.86-3.09,0.89-4.15,1.55-6.77c0.66-2.62-3.27-3.76-3.27-3.76c5.94-5.04,2.2-5.64,2.2-5.64
+                         c-3.93-1.11-3.92-3.95-3.92-3.95C361.84,324.24,362.03,333.89,362.03,333.89z M357.85,277.69c6.54,5.7-2.58,24.24-2.76,27.52
+                         c-0.18,3.28,7.73,12.48,7.73,12.48s2.1,1.46-2.27,3.01c0,0-14.84-5.91-13.05-18.58C349.29,289.46,351.32,271.98,357.85,277.69z" />
+                </g>
+            </svg>
+            <img src="clock_tower.png" style="height: 100%;" />
+        </div>
+        
+        <p>Hint: use swipe up and down</p>
+    </div>
+    <div id="c3" class="screen" style="display: none;">
+        <div id="c3-area" style="position: relative; width: 100%; height: 100%;">
+            <div style="width:100%; height: 20%;">
+            </div>
+            <div style="
+                position: absolute;
+                top: 0;
+                height: 100%;
+                width: 100%;
+                text-align: center;">
+                <img id="book" src="book.png" style="width: 30vw; opacity: 0;"></img>
+            </div>
+
+            <div id="c3-story-text" class="story-txt">
+                <h1>Chapter 3: Old tales</h1>
+                <p>There are many stories. Let's find a place with more stories.</br>
+                    To do this, first, we need to remember an old tale.</br>
+                    It is a tale about a man and a dream.</br>
+                    Follow the name of that man until you find the place.</p>
+                <p>Hint: a sign, music band, coffee.</p>
+                <p>What is the name of the place (in english)?</p>
+            </div>
+            <input id="c3-key" style="opacity: 0;" type="input" required />
+            <div id="c3-try-again" style="opacity: 0;">
+                <p>Try again</p>
+            </div>
+        </div>
+    </div>
+    <div id="c3-intermission" class="screen" style="display: none;">
+        <div id="c3-intermission-cont" class="c3-intermission-cont" style="position: relative; width: 100%;
+            height: 100%;overflow: hidden;">
+            <img id="o-wolf" src="wolf.png" style="display: none;" />
+            <img id="o-castle" src="castle.png" style="display: none;" />
+            <img id="o-book" src="obook.png" style="display: none;" />
+        </div>
+        <p id="c3-msg" style="display: none; position: relative; top: 40%; color: white;" class="msg-txt">
+            We will come back to this place.</br>But before that...
+        </p>
+    </div>
+    <div id="c4" class="screen" style="display: none;">
+        <div style="width:100%; height: 20%;">
+            <img id="map" src="map.png" style="width: 20%; 
+                display: block;margin-left: auto;margin-right: auto;position: relative;"></img>
+        </div>
+        <div id="c4-story-text" class="story-txt">
+            <h1>Chapter 4: Hidden meanings</h1>
+
+            <p>Stories have secret meanings.</br>
+                An observant reader will notice the tiniest of details.</br>
+                Explore and find it. You will know when you see it.
+            </p>
+            <p>Hint: a flower, Christmas, a street.</p>
+            <p>What have you found?</p>
+        </div>
+        <input id="c4-key" style="opacity: 0;" type="input" required />
+        <div id="c4-try-again" style="opacity: 0;">
+            <p>Try again</p>
+        </div>
+    </div>
+    <div id="c4-intermission" class="screen" style="display: none;">
+        <div style="position: relative; width: 100%; height: 100%;">
+            <img id="cat" src="cat.svg"
+                style="opacity: 0; position: absolute; translate: -50% -50%; top: 40%; left: 50%; width: 24vw; color: white;"></img>
+            <p id="c4-msg" style="display: none; position: relative; top: 40%; color: white;" class="msg-txt">
+                Let us come back to the other stories...
+            </p>
+            <div id="c4-btn" style="
+                display: none;
+                position: relative;
+                top: 38%;
+                color: white;
+                margin-left: auto;
+                margin-right: auto;
+                width: 9%;
+                font-size: 5vh;
+                opacity: 0;
+                filter: blur(4px);">
+                &#x27BC;
+            </div>
+        </div>
+    </div>
+    <div id="c5" class="screen" style="display: none;">
+        <div style="width:100%; height: 20%;">
+            <img id="rabbit" src="rabbit.svg" style="width: 20%; 
+                display: block;margin-left: auto;margin-right: auto;position: relative;"></img>
+        </div>
+        <div id="c5-story-text" class="story-txt">
+            <h1>Chapter 5: Down the rabbit hole</h1>
+
+            <p>Follow the white rabbit.</br>
+                Find the image of the cat from the previous chapter.</br>
+                Find the number in that page.</br>
+            </p>
+            <p>What is the number?</p>
+        </div>
+        <input id="c5-key" style="opacity: 0;" type="input" required />
+        <div id="c5-try-again" style="opacity: 0;">
+            <p>Try again</p>
+        </div>
+    </div>
+
+    <div id="c5-intermision" class="screen" style="display: none;">
+        <div id="c5-intermision-container" style="
+            display: none;
+            opacity: 0;
+            background: white;
+            overflow: hidden;
+            position: relative;
+            width: 100%;
+            height: 100%;">
+            <img src="rabbit_background.png" id="rabbit-background"
+                style="position: absolute; translate: -10% -50%; top: 40%; width: 120%; height: 40%; background-size: 100% 100%;"></img>
+            <img src="rabbit.gif" id="rabbit-anim"
+                style="position: absolute; translate: -150% -50%; top: 41%; width: 80%;"></img>
+        </div>
+    </div>
+
+    <div id="c6" class="screen" style="display: none;">
+        <div id="c6-container">
+            <div style="width: 100%; height: 15%; position: relative; background: black;">
+                <img id="music" src="sound.svg" style="translate: -50% -50%; fill: white;
+                        display: block;top: 10%; left: 50%; width: 5%; position: absolute;"></img>
+            </div>
+            <div id="c6-story-text" class="story-txt">
+                <h1>Chapter 6: Sound</h1>
+
+                <p>Some places have a special feeling.</br>
+                    This feeling can be associated with scent, time and sound.</br>
+                    Find the place associated with the sound and enter it.</p>
+                <input id="play-sound" style="
+                    background: white;
+                    color: black;
+                    width: 20%;
+                    text-align: center;
+                    font-family: Sofia;
+                    margin-left: auto;
+                    margin-right: auto;
+                    display: block;
+                    font-size: 2vh;
+                    border: 0;" value="Play &#x266A;" type="button" />
+                <p>What does the sign say?</p>
+            </div>
+            <input id="c6-key" style="opacity: 0;" type="input" required />
+            <div id="c6-try-again" style="opacity: 0;">
+                <p>Try again</p>
+            </div>
+        </div>
+        <div id="sound-box" class="sound-box" style="display: none; opacity: 0;">
+            <audio id="morse-sound" src="morse.wav" style="display: none;"></audio>
+            <div id="morse-button" class="circle" onclick="chapter6sound()"></div>
+            <div id="morse-c1" class="pulse1"></div>
+            <div id="morse-c2" class="pulse2"></div>
+        </div>
+    </div>
+
+    <div id="c6-intermission" class="screen" style="display: none;">
+        <div id="c6-intermission-container" style="
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background-color: black;">
+            <div id="christmas-tree" class="christmas-tree">
+                <div id="tree" class="tree">
+                    <div class="tree-details"></div>
+                </div>
+                <div id="tree-lights" class="lights">
+                    <div class="row-one"></div>
+                    <div class="row-two"></div>
+                </div>
+                <div id="tree-balls" class="balls"></div>
+                <div id="tree-star" class="star"></div>
+                <div class="shadow"></div>
+            </div>
+            <div id="gift" class="gift-start gift">
+                <div id="gift-top" class="gift-top"></div>
+                <div class="gift-box"></div>
+            </div>
+            <div id="greet" style="display:none">
+                <p>My kitttyyy,</p>
+                <p>I wish you a happy new year,</p>
+                <p>love, happiness and warmth in 2023.</p>
+                <p>I hope you are enjoying this special gift.</p>
+                <p>I love you very much.</p>
+                <div id="c6-btn" style="
+                    display: none;
+                    position: relative;
+                    top: 50%;
+                    color: white;
+                    margin-left: auto;
+                    margin-right: auto;
+                    width: 9%;
+                    font-size: 5vh;
+                    opacity: 0;
+                    filter: blur(4px);">
+                    &#x27BC;
+                </div>
+            </div>
+
+            &#x27BC;
+        </div>
+    </div>
+    <div id="new-splash" class="screen" style="background:rgb(250, 240, 229); display: none; opacity: 0;">
+        <img src="splash.gif" style="width: 60%;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        padding-top: 30%;"></img>
+
+        <h1 id="new-game"
+            style="opacity: 0; color:rgb(234, 83, 90); text-align: center; font-size: 5vh; font-family: Sniglet;">
+            Begin the story again</h1>
+    </div>
+
+    <div id="c7" class="screen" style="display: none;">
+        <div style="width:100%; height: 20%;">
+            <img id="ouroboros" src="ouroboros.svg" style="width: 20%; 
+                display: block;margin-left: auto;margin-right: auto;position: relative;"></img>
+        </div>
+        <div id="c7-story-text" class="story-txt">
+            <h1>Chapter 7: Ouroboros</h1>
+            <p>Every story needs a time and place.</br>
+                And you have been here before...</br></p>
+            <p>Hint: the ___________ story</p>
+            <p>So what kind of story is this?</p>
+
+        </div>
+        <input id="c7-key" style="opacity: 0;" type="input" required />
+        <div id="c7-try-again" style="opacity: 0;">
+            <p>Try again</p>
+        </div>
+    </div>
+
+    <div id="outro" class="screen" style="display: none;">
+        <div class="c3-intermission-cont" style="position: relative; width: 100%;
+            height: 100%;overflow: hidden;">
+            <div id="outro-text-h" class="story-txt" style="translate: -50% -50%;
+            left: 50%;
+            top: 10%;
+            position: absolute;
+            width: 100%;
+            ">
+                <h1>Congratulations</br>you have unlocked the treasure!</h1>
+            </div>
+            <img id="snake" src="ouroboros.png" style="width: 100%; 
+                display: none;"></img>
+            <div id="outro-text-d" class="story-txt" style="translate: -50% -50%;
+                left: 50%;
+                top: 50%;
+                position: absolute;
+                width: 100%;
+                ">
+                <p>The treasure can be found at</br> Dominikonu g. 4 </br> using the code 810956</p>
+            </div>
+            <div id="outro-text-g" class="story-txt" style="translate: -50% -50%;
+                left: 50%;
+                top: 60%;
+                position: absolute;
+                width: 100%;
+                ">
+                <h1>This is our story</h1>
+
+            </div>
+            <div id="outro-btn" style="position: relative;
+                    top: 62%;
+                    color: #AFAFAF;
+                    margin-left: auto;
+                    margin-right: auto;
+                    width: 9%;
+                    font-size: 5vh;
+                    opacity: 0;
+                    filter: blur(4px);">
+                &#x27BC;
+            </div>
+        </div>
+    </div>
+    <div id="c8" class="screen" style="display: none;">
+        <div style="width:100%; height: 15%;">
+            <img id="coffee" src="coffee.gif" style="width: 20%; 
+                display: block;margin-left: auto;margin-right: auto;position: relative;"></img>
+        </div>
+        <div id="c8-story-text" class="story-txt">
+            <h1>Chapter 8: One more thing...</h1>
+            <p>Hot coffee and an interesting story are perfect in this weather.</br>
+                But seasons change,</br>and thoughts of summer will soon be on our minds.</p>
+            <p>You saw a sign today, what did it say?</p>
+
+        </div>
+        <input id="c8-key" style="opacity: 0;" type="input" required />
+        <div id="c8-try-again" style="opacity: 0;">
+            <p>Try again</p>
+        </div>
+    </div>
+
+
+</div>
+
+<!-- <h1>Hello</h1> -->
