@@ -1,5 +1,6 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="theme-color" content="#FAF0E5" />
     <style>
         @font-face {
             font-family: "Sniglet";
@@ -108,12 +109,12 @@
         }
 
 
-        body {
+        /* body {
             width: 100%;
             font-family: var(--font);
             color: var(--text);
             background: var(--bg);
-        }
+        } */
 
         .c7-span {
             font-family: Marques;
@@ -187,134 +188,7 @@
             position: relative;
         }
 
-        /* include the compass as a circle */
-        .compass {
-            width: 125px;
-            height: 125px;
-            border-radius: 50%;
-            background: var(--compass-bg);
-            box-shadow: 0 0 0 0.5rem var(--compass);
-            /* move the compass in the top left corner of the map */
-            transform: translate(-50%, -50%) rotate(-12deg);
-            /* position relative to absolute position the needle in the center of the comapss */
-            position: absolute;
-            /* transparent border to have the cardinal points slightly pushed inwards */
-            border: 5px solid transparent;
-        }
-
-        /* include the needle in the center of the compass, using the clip-path property to fake the appearance of the desired shape */
-        .compass .needle {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            height: 80%;
-            width: 8%;
-            background: linear-gradient(to bottom,
-                    var(--needle-north) 50%,
-                    var(--needle-south) 50%);
-            transform: translate(-50%, -50%);
-            clip-path: polygon(0% 50%, 50% 0%, 100% 50%, 50% 100%);
-        }
-
-        /* with a pseudo element include a dot as if fixing the needle in place */
-        .compass .needle:after {
-            content: "";
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 7.5px;
-            height: 7.5px;
-            background: var(--text);
-            border-radius: 50%;
-        }
-
-        /* absolute position the cardinal points included in the compass */
-        .compass .direction {
-            text-transform: uppercase;
-            color: var(--text);
-            position: absolute;
-        }
-
-        .compass .direction[data-direction="n"] {
-            color: var(--needle-north);
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-        }
-
-        .compass .direction[data-direction="e"] {
-            top: 50%;
-            right: 0;
-            transform: translate(-50%, -50%);
-        }
-
-        .compass .direction[data-direction="s"] {
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-        }
-
-        .compass .direction[data-direction="w"] {
-            top: 50%;
-            left: 0;
-            transform: translate(50%, -50%);
-        }
-
-        /* stretch the svg to cover the space provided by the container */
-        svg {
-            width: 100%;
-            height: 100%;
-            border-radius: inherit;
-        }
-
-        /* style each path element with the color picked up by the stroke property */
-        svg path.x {
-            color: var(--goal);
-        }
-
-        svg path#trail {
-            color: var(--trail);
-            /* have the trail segmented in smaller chunks */
-            stroke-dasharray: 8px;
-        }
-
-        svg path#walk {
-            /* use the same color of the background to effectively hide the trail */
-            color: var(--map);
-        }
-
-        /* animation drawing the X defined by the path.x elements */
-        @keyframes strikeGoal {
-            to {
-                stroke-dashoffset: 0;
-            }
-        }
-
-        /* animation removing the overlay provided in path#walk */
-        @keyframes goToGoal {
-            to {
-                stroke-dashoffset: var(--stroke-dashoffset);
-            }
-        }
-
-        .map-overlay-wrap {
-            position: relative;
-            display: inline-block;
-        }
-
-        .map-overlay-wrap img {
-            display: block;
-            max-width: 100%;
-            height: auto;
-        }
-
-        .map-overlay-wrap svg {
-            position: absolute;
-            top: 0;
-            left: 0;
-        }
-
+        
         @keyframes bottleDropDown {
             0% {
                 top: 10%;
@@ -400,9 +274,13 @@
         }
 
         @keyframes TextFadeIn {
+            0% {
+                opacity: 0;
+                /* filter: blur(4px); */
+            }
             100% {
                 opacity: 1;
-                filter: blur(0);
+                /* filter: blur(0); */
             }
         }
 
@@ -415,6 +293,7 @@
 
         .story-txt-fadein {
             animation: TextFadeIn 2s forwards cubic-bezier(.51, -0.01, .34, .69);
+            /* animation: TextFadeIn 2s forwards ease-in; */
         }
 
         .msg-txt {
@@ -1822,8 +1701,9 @@
         document.getElementById("c1").style.display = "block";
         document.getElementById("c1-img").classList.add("c1-house-drop");
         document.getElementById("c1-story-text").classList.add("story-txt-fadein");
+        document.getElementById("intro-btn").classList.add("story-txt-fadein");
         setTimeout(() => {
-            document.getElementById("intro-btn").classList.add("fade-in");
+            
             document.getElementById("intro-btn").onclick = function start(params) {
                 params.currentTarget.onclick = null;
                 document.getElementById("c1").classList.add('fade-out-screen');
