@@ -7,9 +7,16 @@
         }
 
         @font-face {
+            font-family: "Marques";
+            src: url(MarquesfreeRegular.otf) format("truetype");
+        }
+
+        @font-face {
             font-family: "Sofia";
             src: url(PrincessSofia-Regular.ttf) format("truetype");
         }
+
+
 
         body {
             background: black;
@@ -24,7 +31,7 @@
         h1 {
             color: rgb(234, 83, 90);
             text-align: center;
-            font-size: 3vh;
+            font-size: 2.1vh;
             font-family: Sniglet;
             font-weight: bold;
         }
@@ -95,36 +102,69 @@
         }
 
 
-        /* import font(s) */
-        @import url("https://fonts.googleapis.com/css?family=Special+Elite");
-
-        /* root variables */
-        :root {
-            --text: #4e4e4e;
-            --font: "Special Elite", cursive;
-            --goal: #d13b3a;
-
-            --compass: #e67c54;
-            --compass-bg: #e4ddd6;
-            --needle-north: #d95b4d;
-            --needle-south: #868686;
-            /* stroke-dashoffset is used for the value ultimately picked up by path#walk
-  ! the variable is updated in the script to match the length of the path
-  */
-            --stroke-dashoffset: 0;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
         body {
             width: 100%;
             font-family: var(--font);
             color: var(--text);
             background: var(--bg);
+        }
+
+        .c7-span {
+            font-family: Marques;
+            font-size: 3vh;
+            color: black;
+            margin-left: 0.4vh;
+            opacity: 0;
+            display: inline-block;
+        }
+
+        @keyframes c7-drop {
+            0% {
+                transform: translate(0%, -70%);
+                opacity: 0;
+            }
+
+            100% {
+                transform: translate(0%, 0%);
+                opacity: 1;
+            }
+        }
+
+        .c7-drop {
+            animation: c7-drop 2.4s;
+            animation-fill-mode: forwards;
+            transition-timing-function: ease-out;
+        }
+
+        @keyframes swing {
+
+            0%,
+            100% {
+                transform: rotate(0deg);
+            }
+
+            25% {
+                transform: rotate(-16deg);
+                /* Adjust angle for more or less swing */
+            }
+
+            50% {
+                transform: rotate(16deg);
+            }
+
+            75% {
+                transform: rotate(-16deg);
+            }
+        }
+
+        #bellImage {
+            display: block;
+            margin: auto;
+            margin-top: 60%;
+            width: 20vh;
+            transform-origin: top center;
+            animation: swing 1.3s ease-in-out 1s 3;
+            /* Adjust the timing and repetition as needed */
         }
 
         /* have the map stretch to cover a sizeable portion of the width of the screen */
@@ -307,7 +347,7 @@
 
         p {
             color: rgb(234, 83, 90);
-            font-size: 2.5vh;
+            font-size: 2vh;
             text-align: center;
             width: 80%;
             margin-left: 10%;
@@ -345,11 +385,11 @@
             margin-left: auto;
             margin-right: auto;
             font-family: Sofia;
-            color: white;
+            color: rgb(234, 83, 90);
         }
 
         input[type=input]:focus {
-            border-color: white
+            border-color: rgb(234, 83, 90);
         }
 
         @keyframes TextFadeIn {
@@ -363,11 +403,10 @@
             opacity: 0;
             color: rgb(234, 83, 90);
             /* filter: blur(4px); */
-            font-size: 3vh;
+            font-size: 2vh;
         }
 
         .story-txt-fadein {
-            font: 3vh Sniglet;
             animation: TextFadeIn 2s forwards cubic-bezier(.51, -0.01, .34, .69);
         }
 
@@ -1246,39 +1285,29 @@
         }
 
         .running-rabbit {
-            animation: RunningRabbit 2.7s linear forwards;
+            animation: RunningRabbit 4.0s linear forwards;
         }
 
-        @keyframes BookShow {
+        @keyframes centerImgShow {
             0% {
-                translate: 0% 300%;
-                scale: 4;
+                translate: 0% -20%;
                 opacity: 0;
             }
 
-            25% {
-                translate: 0% 300%;
-                scale: 3;
-                opacity: 0.1;
-            }
-
-            50% {
-                translate: 0% 300%;
-                scale: 2;
-                opacity: 0.2;
-            }
-
             75% {
-                translate: 0% 300%;
-                scale: 0.92;
+                translate: 0% 0%;
                 opacity: 1;
             }
 
             100% {
-                translate: 0% 300%;
-                scale: 1;
+                translate: 0% 0%;
                 opacity: 1;
             }
+        }
+
+        .center-img-show {
+            /* animation: centerImgShow 1.5s cubic-bezier(.65, .34, .83, .25) forwards; */
+            animation: centerImgShow 1.3s ease-out forwards;
         }
 
         .book-show {
@@ -1357,6 +1386,20 @@
         .bottle-shake {
             animation: BottleShake 1.4s linear forwards;
         }
+
+        @keyframes ResizeTower {
+            0% {
+                width: 30vh;
+            }
+
+            100% {
+                width: 35vh;
+            }
+        }
+
+        .resize-tower {
+            animation: ResizeTower 1.3s ease-out forwards;
+        }
     </style>
 </head>
 
@@ -1372,31 +1415,22 @@
     function chapter8() {
         window.location.hash = 'fe5d';
         document.getElementById("c8").style.display = "block";
-        document.getElementById("coffee").classList.add("book-drop-down");
-        setTimeout(() => {
-            document.getElementById('c8-story-text').classList.add("story-txt-fadein");
-            document.getElementById('c8-key').classList.add("fade-in-slow");
-            document.getElementById("c8-key").onkeyup = (event) => {
-                if (event.keyCode === 13) {
-                    event.preventDefault();
-                    event.target.blur();
-                    window.scrollTo(0, 0);
-                    document.body.scrollTop = 0;
-                    answer = event.target.value.toLowerCase().replace(' ', '');
-                    if (answer == 'depeche' || answer == 'depechecoffee') {
-                        document.getElementById("c8-key").onkeyup = null;
-                        document.getElementById("c8").classList.add('fade-out-screen');
-                        setTimeout(() => {
-                            location.href = 'https://www.kult.lt/varom-renginiai/depeche-mode-talinas/';
-                        }, 1600);
-                    }
-                    else {
-                        event.target.value = "";
-                        document.getElementById("c8-try-again").animate(showTryAgain, 2000);
-                    }
-                }
-            }
-        }, 500);
+        document.getElementById("c8-cont").classList.add("fade-in");
+        function update_countdown() {
+            var now = new Date().getTime();
+            var distance = countDownDate - now;
+            var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+            document.getElementById("c8-countdown").innerHTML = days + "d " + hours + "h "
+                + minutes + "m " + seconds + "s ";
+            return distance;
+        }
+        update_countdown()
+        var x = setInterval(function () {
+            distance = update_countdown()
+        }, 1000);
     }
 
     function outro() {
@@ -1442,23 +1476,63 @@
     function chapter7() {
         window.location.hash = '902b';
         document.getElementById("c7").style.display = "block";
-        document.getElementById("ouroboros").classList.add("book-drop-down");
+        document.getElementById('tower').classList.add("center-img-show");
         setTimeout(() => {
-            document.getElementById('c7-story-text').classList.add("story-txt-fadein");
+            document.getElementById("c7-story-text").classList.add("story-txt-fadein");
+            document.getElementById("c7-story-text-2").classList.add("story-txt-fadein");
             document.getElementById('c7-key').classList.add("fade-in-slow");
+
             document.getElementById("c7-key").onkeyup = (event) => {
                 if (event.keyCode === 13) {
                     event.preventDefault();
                     event.target.blur();
                     window.scrollTo(0, 0);
                     document.body.scrollTop = 0;
-                    if (event.target.value.toLowerCase().replace(' ', '') == 'neverending') {
+                    answer = event.target.value.toLowerCase().replace(' ', '').replace('.', '');
+                    if (answer == 'boksto' || answer == 'bokstog' || answer == 'tower' || answer == 'towerst') {
                         document.getElementById("c7-key").onkeyup = null;
-                        document.getElementById("c7").classList.add('fade-out-screen');
+                        document.getElementById("c7-story-text").style.opacity = 1;
+                        document.getElementById("c7-story-text").classList.remove("story-txt-fadein");
+                        document.getElementById("c7-story-text-2").style.opacity = 1;
+                        document.getElementById("c7-story-text-2").classList.remove("story-txt-fadein");
+                        document.getElementById("c7-story-text").classList.add("fade-out-slow");
+                        document.getElementById("c7-story-text-2").classList.add("fade-out-slow");
+                        document.getElementById('tower').style.opacity = 1;
+                        document.getElementById('tower').classList.remove("center-img-show");
+
+                        document.getElementById('c7-key').style.opacity = 1;
+                        document.getElementById('c7-key').classList.remove("fade-in-slow");
+                        document.getElementById('c7-key').classList.add("fade-out-slow");
                         setTimeout(() => {
-                            document.getElementById("c7").style.display = "none";
-                            outro();
-                        }, 1600);
+                            document.getElementById('tower').classList.add("resize-tower");
+                            setTimeout(() => {
+                                document.getElementById('c7-key').style.display = "none";
+                                document.getElementById('c7-try-again').style.display = "none";
+                                document.getElementById('c7-answer').style.opacity = "1";
+                                setTimeout(() => {
+                                    document.getElementById("c7-a1").classList.add('c7-drop');
+                                }, 200);
+                                setTimeout(() => {
+                                    document.getElementById("c7-a2").classList.add('c7-drop');
+                                }, 1200);
+                                setTimeout(() => {
+                                    document.getElementById("c7-a3").classList.add('c7-drop');
+                                }, 2200);
+                                setTimeout(() => {
+                                    document.getElementById("c7").classList.add('fade-out-screen');
+                                    setTimeout(() => {
+                                        document.getElementById("c7").style.display = "none";
+                                        chapter8();
+                                    }, 1600);
+                                }, 4600);
+                            }, 1000);
+                        }, 1000);
+                        //document.getElementById("c7-answer").classList.add('fade-in-slow');
+                        // document.getElementById("c7").classList.add('fade-out-screen');
+                        // setTimeout(() => {
+                        //     document.getElementById("c7").style.display = "none";
+                        //     document.getElementById("c7-answer").classList.add('fade-in-slow');
+                        // }, 1600);
                     }
                     else {
                         event.target.value = "";
@@ -1466,197 +1540,57 @@
                     }
                 }
             }
-        }, 500);
-    }
-
-    function newIntro() {
-        window.location.hash = '273e';
-        document.getElementById("new-splash").style.display = "block";
-        document.getElementById("new-splash").classList.add("fade-in");
-        setTimeout(() => {
-            document.getElementById("new-game").classList.add("fade-in");
-            setTimeout(() => {
-                document.getElementById("new-game").onclick = (event) => {
-                    event.currentTarget.onclick = null;
-                    document.getElementById("new-splash").classList.add("fade-out-screen");
-                    setTimeout(() => {
-                        document.getElementById("new-splash").style.display = 'none';
-                        chapter7();
-                    }, 1600);
-                }
-            }, 1600);
-        }, 600);
-    }
-
-    function intermission6() {
-        document.getElementById("c6-intermission").style.display = 'block';
-        document.getElementById("tree").classList.add('tree-drop');
-        setTimeout(() => {
-            document.getElementById("tree-balls").classList.add('tree-drop');
-            document.getElementById("tree-star").classList.add('star-drop');
-
-            setTimeout(() => {
-                document.getElementById("tree-lights").classList.add('lights-drop');
-                gift = document.getElementById("gift");
-                gift.classList.add('gift-drop');
-                gift.onclick = () => {
-                    gift.onclick = null;
-                    document.getElementById("christmas-tree").classList.add('fade-out');
-                    setTimeout(() => {
-                        document.getElementById("christmas-tree").style.display = 'none';
-                        gift.classList.add('gift-ready');
-                        gift.classList.remove('gift-start');
-                        gift.classList.add('transform-gift');
-                        document.getElementById('gift-top').classList.add('transform-gift-top');
-                        setTimeout(() => {
-                            gift.classList.add('gift-center');
-                            gift.classList.remove('transform-gift');
-                            gift.classList.add('gift-wiggle');
-                            setTimeout(() => {
-                                document.getElementById("gift-top").classList.add('gift-top-open');
-                                setTimeout(() => {
-                                    document.getElementById("greet").style.display = 'block';
-                                    document.getElementById("greet").classList.add('greet');
-                                    setTimeout(() => {
-                                        document.getElementById('c6-btn').style.display = 'block';
-                                        document.getElementById('c6-btn').classList.add('story-txt-fadein');
-                                        setTimeout(() => {
-                                            document.getElementById('c6-btn').onclick = (event) => {
-                                                event.currentTarget.onclick = null;
-                                                document.getElementById("c6-intermission").classList.add("fade-out-screen");
-                                                setTimeout(() => {
-                                                    document.getElementById("c6-intermission").style.display = "none";
-                                                    newIntro();
-                                                }, 1600);
-                                            }
-                                        }, 1200);
-                                    }, 5000);
-                                    //document.getElementById('container').classList.add('fade-out');
-                                }, 2000);
-                            }, 1500);
-                        }, 1000);
-                    }, 1000);
-                }
-            }, 700);
-
-        }, 700);
-    }
-
-    sound_playing = false;
-
-    function chapter6sound() {
-        if (!sound_playing) {
-            sound_playing = true;
-            document.getElementById('morse-sound').play();
-            container = document.getElementById('c6-container');
-            soundBox = document.getElementById('sound-box');
-            setTimeout(function () {
-                document.getElementById("morse-button").classList.add("circle-pulse");
-                document.getElementById("morse-c1").classList.add("pulse_anim1");
-                document.getElementById("morse-c2").classList.add("pulse_anim2");
-                setTimeout(() => {
-                    document.getElementById("morse-button").classList.remove("circle-pulse");
-                    document.getElementById("morse-c1").classList.remove("pulse_anim1");
-                    document.getElementById("morse-c2").classList.remove("pulse_anim2");
-                    soundBox.style.opacity = 1;
-                    soundBox.classList.remove('fade-in');
-                    soundBox.classList.add('fade-out');
-                    setTimeout(() => {
-                        soundBox.style.display = 'none';
-                        soundBox.style.opacity = 0;
-                        soundBox.classList.remove('fade-out');
-                        container.classList.remove('fade-out');
-                        container.style.opacity = 0;
-                        container.style.display = 'block';
-                        container.classList.add('fade-in');
-                        setTimeout(() => {
-                            container.style.opacity = 1;
-                            container.classList.remove('fade-in');
-                            sound_playing = false;
-                        }, 800);
-                    }, 800);
-                }, 11000);
-            }, 300);
-        }
+        }, 300);
     }
 
     function chapter6() {
         window.location.hash = 'c1df';
         document.getElementById("c6").style.display = "block";
-        document.getElementById("music").classList.add("img-drop-down");
-        function playSound() {
-            document.getElementById('play-sound').onclick = null;
-            container = document.getElementById('c6-container');
-            container.classList.add('fade-out');
-            setTimeout(() => {
-                container.style.display = 'none';
-                soundBox = document.getElementById('sound-box');
-                soundBox.style.display = 'block';
-                soundBox.classList.add('fade-in');
-                document.getElementById('play-sound').onclick = playSound;
-            }, 800);
-        }
+        document.getElementById('c6-story-text').classList.add("story-txt-fadein");
+        document.getElementById('c6-img').classList.add("story-txt-fadein");
+
         setTimeout(() => {
-            document.getElementById('c6-story-text').classList.add("story-txt-fadein");
-            document.getElementById('c6-key').classList.add("fade-in-slow");
-            document.getElementById("c6-key").onkeyup = (event) => {
-                if (event.keyCode === 13) {
-                    event.preventDefault();
-                    event.target.blur();
-                    window.scrollTo(0, 0);
-                    document.body.scrollTop = 0;
-                    if (event.target.value.toLowerCase().replace(' ', '') == 'biscuits') {
-                        document.getElementById("c6-key").onkeyup = null;
-                        document.getElementById("c6").classList.add('fade-out-screen');
-                        setTimeout(() => {
-                            document.getElementById("c6").style.display = "none";
-                            intermission6();
-                        }, 2400);
-                    }
-                    else {
-                        event.target.value = "";
-                        document.getElementById("c6-try-again").animate(showTryAgain, 2000);
-                    }
-                }
+            document.getElementById('c6-btn').classList.add("fade-in-slow");
+            document.getElementById("c6-btn").onclick = function start(params) {
+                params.currentTarget.onclick = null;
+                document.getElementById("c6").classList.add('fade-out-screen');
+                setTimeout(() => {
+                    document.getElementById("c6").style.display = "none";
+                    chapter7();
+                }, 1600);
             }
-            setTimeout(() => {
-                document.getElementById('play-sound').onclick = playSound;
-            }, 800);
         }, 500);
     }
 
     function intermission5() {
         document.getElementById("c5-intermision").style.display = 'block';
-        document.getElementById("c5-intermision-container").style.display = 'block';
         document.getElementById("c5-intermision-container").classList.add('fade-in');
         setTimeout(() => {
-            document.getElementById("rabbit-anim").classList.add('running-rabbit');
+            document.getElementById("c5-intermision-container").classList.add('fade-out-screen');
             setTimeout(() => {
-                setTimeout(() => {
-                    document.getElementById("c5-intermision-container").classList.add('fade-out-screen');
-                    setTimeout(() => {
-                        document.getElementById("c5-intermision").style.display = "none";
-                        chapter6();
-                    }, 1600);
-                }, 1000);
-            }, 3000);
-        }, 1500);
+                document.getElementById("c5-intermision").style.display = "none";
+                chapter6();
+            }, 1600);
+        }, 3000);
     }
 
     function chapter5() {
         window.location.hash = 'ac347';
         document.getElementById("c5").style.display = "block";
-        document.getElementById("rabbit").classList.add("book-drop-down");
+        document.getElementById('oven').classList.add("center-img-show");
         setTimeout(() => {
-            document.getElementById('c5-story-text').classList.add("story-txt-fadein");
+            document.getElementById("c5-story-text").classList.add("story-txt-fadein");
+            document.getElementById("c5-story-text-2").classList.add("story-txt-fadein");
             document.getElementById('c5-key').classList.add("fade-in-slow");
+
             document.getElementById("c5-key").onkeyup = (event) => {
                 if (event.keyCode === 13) {
                     event.preventDefault();
                     event.target.blur();
                     window.scrollTo(0, 0);
                     document.body.scrollTop = 0;
-                    if (event.target.value.toLowerCase().replace(' ', '') == '11') {
+                    answer = event.target.value.toLowerCase().replace(' ', '');
+                    if (answer == 'pizza' || answer == 'pica' || answer == 'piza' || answer == 'apizza') {
                         document.getElementById("c5-key").onkeyup = null;
                         document.getElementById("c5").classList.add('fade-out-screen');
                         setTimeout(() => {
@@ -1670,39 +1604,36 @@
                     }
                 }
             }
-        }, 500);
+        }, 300);
     }
 
     function intermission4() {
-        document.getElementById('c4-intermission').style.display = 'block';
-        document.getElementById('cat').classList.add('c4-cat-anim');
+        document.getElementById("c4-intermission").style.display = 'block';
+        document.getElementById("c4-intermision-container").style.display = 'block';
+        document.getElementById("c4-intermision-container").classList.add('fade-in');
         setTimeout(() => {
-            document.getElementById("c4-msg").style.display = 'block';
-            document.getElementById("c4-msg").classList.add("story-txt-fadein");
+            document.getElementById("ktn-anim").classList.add('running-rabbit');
             setTimeout(() => {
-                document.getElementById("c4-btn").style.display = 'block';
-                document.getElementById("c4-btn").classList.add("story-txt-fadein");
                 setTimeout(() => {
-                    document.getElementById("c4-btn").onclick = (event) => {
-                        event.currentTarget.onclick = null;
-                        document.getElementById("c4-intermission").classList.add("fade-out-screen");
-                        setTimeout(() => {
-                            document.getElementById("c4-intermission").style.display = "none";
-                            chapter5();
-                        }, 1600);
-                    }
-                }, 800);
-            }, 1200);
-        }, 2000);
+                    document.getElementById("c4-intermision-container").classList.add('fade-out-screen');
+                    setTimeout(() => {
+                        document.getElementById("c4-intermission").style.display = "none";
+                        chapter5();
+                    }, 1600);
+                }, 1000);
+            }, 3000);
+        }, 500);
     }
 
     function chapter4() {
         window.location.hash = '1b64';
         document.getElementById("c4").style.display = "block";
-        document.getElementById("map").classList.add("book-drop-down");
+        document.getElementById('town').classList.add("center-img-show");
         setTimeout(() => {
-            document.getElementById('c4-story-text').classList.add("story-txt-fadein");
+            document.getElementById("c4-story-text").classList.add("story-txt-fadein");
+            document.getElementById("c4-story-text-2").classList.add("story-txt-fadein");
             document.getElementById('c4-key').classList.add("fade-in-slow");
+
             document.getElementById("c4-key").onkeyup = (event) => {
                 if (event.keyCode === 13) {
                     event.preventDefault();
@@ -1724,85 +1655,25 @@
                     }
                 }
             }
-        }, 500);
+        }, 300);
     }
 
     function intermision3() {
-        screen = document.getElementById('c3-intermission');
-        screen.style.display = 'block';
-        container = document.getElementById('c3-intermission-cont');
-        container.style.display = 'block';
-        container.classList.add('fade-to-white');
+        document.getElementById("c3-intermission").style.display = "block";
+        document.getElementById("bell-container").classList.add("fade-in");
         setTimeout(() => {
-            wolf = document.getElementById('o-wolf');
-            wolf.classList.add('img-shrink');
-            wolf.style.display = 'block';
+            document.getElementById("bell-container").classList.add("fade-out");
             setTimeout(() => {
-                wolf.style.display = 'none';
-                castle = document.getElementById('o-castle');
-                castle.classList.add('img-shrink');
-                castle.style.display = 'block';
-                setTimeout(() => {
-                    castle.style.display = 'none';
-                    book = document.getElementById('o-book');
-                    book.classList.add('img-shrink');
-                    book.style.display = 'block';
-                    setTimeout(() => {
-                        container.style.background = 'white';
-                        container.classList.remove('fade-to-white');
-                        container.classList.add('fade-to-black');
-                        setTimeout(() => {
-                            document.getElementById('c3-intermission-cont').style.display = 'none';
-                            document.getElementById("c3-msg").style.display = "block";
-                            document.getElementById("c3-msg").classList.add('msg-txt-fade');
-                            setTimeout(() => {
-                                screen.style.display = 'none';
-                                chapter4();
-                            }, 6000);
-                        }, 1000);
-                    }, 4000);
-                }, 4000);
-            }, 4000);
-        }, 800);
+                document.getElementById("c3-intermission").style.display = "none";
+                chapter4();
+            }, 1000);
+        }, 4700);
     }
 
     function chapter3() {
         window.location.hash = '77de';
         document.getElementById("c3").style.display = "block";
-        document.getElementById("book").classList.add('book-show');
-        setTimeout(() => {
-            document.getElementById("book").style.opacity = 1;
-            document.getElementById("book").classList.remove('book-show');
-            document.getElementById("book").classList.add('book-move');
-        }, 1700);
-        setTimeout(() => {
-            document.getElementById('c3-story-text').classList.add("story-txt-fadein");
-            document.getElementById('c3-key').classList.add("fade-in-slow");
-            document.getElementById("c3-key").onkeyup = (event) => {
-                if (event.keyCode === 13) {
-                    event.preventDefault();
-                    event.target.blur();
-                    window.scrollTo(0, 0);
-                    document.body.scrollTop = 0;
-                    if (event.target.value.toLowerCase().replace(' ', '') == 'friendship') {
-                        document.getElementById("c3-key").onkeyup = null;
-                        document.getElementById("c3").classList.add('fade-out-screen');
-                        setTimeout(() => {
-                            document.getElementById("c3").style.display = "none";
-                            intermision3();
-                        }, 1600);
-                    }
-                    else {
-                        event.target.value = "";
-                        document.getElementById("c3-try-again").animate(showTryAgain, 2000);
-                    }
-                }
-            }
-        }, 2800);
-    }
-    function chapter2() {
-        window.location.hash = 'da4b';
-        document.getElementById("c2").style.display = "block";
+        document.getElementById("c3-cont").classList.add("fade-in-slow");
         const minHand = document.querySelector('#minHand');
         const hourHand = document.querySelector('#hourHand');
         const coords = [-1, 2];
@@ -1811,7 +1682,7 @@
         m_value = 0;
         const swipeDelay = 700;
         let lastSwipeTime = 0;
-    
+
         function handleTouchStart(event) {
             startY = event.touches[0].clientY;
         }
@@ -1819,7 +1690,6 @@
         function handleTouchEnd(event) {
             const now = Date.now();
             if (now - lastSwipeTime < swipeDelay) {
-                console.log('Swipe ignored. Too soon.');
                 return;
             }
 
@@ -1841,11 +1711,6 @@
                 clock();
             }
 
-            // Check if the swipe is upwards and its intensity
-            if (swipeDistance > 0) {
-                console.log('Swiped Up! Distance:', swipeDistance);
-
-            }
         }
 
         swipeArea.addEventListener('touchstart', handleTouchStart, false);
@@ -1860,7 +1725,7 @@
             //Angle of rotation, check the docs/ folder for the calculation detail
             minR = m_value;
             hrR = h_value;
-            
+
             function checkTime() {
                 const time = new Date();
                 h = time.getHours();
@@ -1870,11 +1735,17 @@
                 const min = Math.round(time.getMinutes() / 5);
                 cur_h = Math.round(h_value / 360 * 12);
                 cur_m = Math.round(m_value / 360 * 12);
-                if (cur_h == h && cur_m == min) {
+                if (cur_h > 1 || (cur_h == h && cur_m == min)) {
                     minR = time.getMinutes() * 6;
-                    hrR = h * (360/12);
+                    hrR = h * (360 / 12);
+                    swipeArea.removeEventListener('touchstart', handleTouchStart, false);
+                    swipeArea.removeEventListener('touchend', handleTouchEnd, false);
                     setTimeout(() => {
-                        alert('You got it!');
+                        document.getElementById("c3-cont").classList.add("fade-out-screen");
+                        setTimeout(() => {
+                            document.getElementById("c3").style.display = "none";
+                            intermision3();
+                        }, 1600);
                     }, 700);
                 }
             }
@@ -1891,6 +1762,40 @@
         }
 
         clock();
+    }
+
+    function chapter2() {
+        window.location.hash = 'da4b';
+        document.getElementById("c2").style.display = "block";
+        document.getElementById("c2-img").classList.add("book-drop-down");
+        setTimeout(() => {
+            document.getElementById("c2-story-text").classList.add("story-txt-fadein");
+            setTimeout(() => {
+                document.getElementById('c2-key').classList.add("fade-in-slow");
+
+                document.getElementById("c2-key").onkeyup = (event) => {
+                    if (event.keyCode === 13) {
+                        event.preventDefault();
+                        event.target.blur();
+                        window.scrollTo(0, 0);
+                        document.body.scrollTop = 0;
+                        answer = event.target.value.toLowerCase().replace(' ', '');
+                        if (answer == 'christmastree' || answer == 'tree' || answer == 'egle') {
+                            document.getElementById("c2-key").onkeyup = null;
+                            document.getElementById("c2").classList.add('fade-out-screen');
+                            setTimeout(() => {
+                                document.getElementById("c2").style.display = "none";
+                                chapter3();
+                            }, 1600);
+                        }
+                        else {
+                            event.target.value = "";
+                            document.getElementById("c2-try-again").animate(showTryAgain, 2000);
+                        }
+                    }
+                }
+            }, 300);
+        }, 200);
     }
 
     function chapter1_intermission() {
@@ -1925,6 +1830,8 @@
     }
 
     function splash_ready() {
+        document.getElementById("splash").style.display = "block";
+        document.getElementById("splash").classList.add("fade-in");
         btn_splash = document.getElementById("btn-splash");
         btn_splash.classList.add("story-txt-fadein");
         btn_splash.onclick = function start(params) {
@@ -1932,7 +1839,7 @@
             document.getElementById("splash").classList.add("fade-out-screen");
             setTimeout(() => {
                 document.getElementById("splash").style.display = "none";
-                intro();
+                chapter1();
             }, 1600);
         }
     }
@@ -1942,7 +1849,6 @@
         document.ontouchmove = function (e) {
             e.preventDefault();
         }
-        setTimeout(function () {   window.scrollTo(0, 1); document.getElementById("c1").style.background = "red"; }, 1000);
         if (window.location.hash) {
             var hash = window.location.hash.substring(1);
             if (hash === '356a') {
@@ -1984,13 +1890,13 @@
             // if (distance > 0)
             //     splash_countdown();
             // else
-            chapter1();
+            splash_ready();
         }
     };
 
 </script>
 <div class="content" style="background:rgb(250, 240, 229);">
-    <div id="splash" class="screen" style="background:rgb(250, 240, 229); display: none;">
+    <div id="splash" class="screen" style="background:rgb(250, 240, 229); display: none; opacity: 0;">
         <div style="width: 60%;
         display: block;
         margin-left: auto;
@@ -2013,7 +1919,7 @@
             <img id="c1-img" src="c_build.png"
                 style="z-index: 1; width: 30%;display: block;margin-left: auto;margin-right: auto;position: relative;"></img>
         </div>
-        <div id="c1-story-text" class="story-txt" style="position: relative;top: 14%;">
+        <div id="c1-story-text" class="story-txt" style="position: relative;top: 8%;">
             <h1>Chapter 1: Place</h1>
             <p>Every story needs a cat and a place.<br />
                 Now we begin our story from where all our stories started.
@@ -2023,12 +1929,12 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            margin-top: 40%;
+            margin-top: 30%;
             color:rgb(234, 83, 90);
             opacity: 0;
             height: 6vh;">
-            <span style="font-size: 2.4vh;">I'm at the place</span>
-            <span style="font-size: 5vh; padding-left: 2vw;">&#x27BC;</span>
+            <span style="font-size: 2vh;">I'm at the place</span>
+            <span style="font-size: 4vh; padding-left: 2vw;">&#x27BC;</span>
         </div>
     </div>
     <div id="c1-interm" class="screen" style="display: none;">
@@ -2040,26 +1946,44 @@
         display: block;"></img>
     </div>
     <div id="c2" class="screen" style="display: none;">
-        <p style="padding-top: 3vh;">Time of Christmas and joy is fast approaching. Let's set the time correctly.</p>
-        <div id="clock-panel" style="height: 80vh; display: flex; justify-content: center;">
-            <svg class="clock" style="position: absolute;
+        <div style="width:100%; height: 10%;">
+            <img id="c2-img" src="clock.png"
+                style="z-index: 1; width: 20%;display: block;margin-left: auto;margin-right: auto;position: relative; opacity: 0;"></img>
+        </div>
+        <div id="c2-story-text" class="story-txt" style="position: relative;top: 8%;">
+            <h1>Chapter 2: Time</h1>
+            <p>Tic Toc, Tic Toc, Christmas are coming.<br />
+                Find a large clock, what is it facing?
+            <p>
+        </div>
+        <input id="c2-key" style="opacity: 0; position: relative; top: 10%" type="input" required />
+        <div id="c2-try-again" style="opacity: 0;position: relative; top: 10%;">
+            <p>Try again</p>
+        </div>
+    </div>
+    <div id="c3" class="screen" style="display: none;">
+        <div id="c3-cont" style="width: 100%; height: 100%; opacity: 0;">
+            <h1 style="position: relative; top: 5%;">Chapter 3: clock</h1>
+            <p style="position: relative; top: 5%;">Time of Christmas and joy is fast approaching. Let's set the time correctly.
+            </p>
+            <div id="clock-panel" style="height: 70vh; display: flex; justify-content: center; position: relative; top: 5%;">
+                <svg class="clock" style="position: absolute;
             width: 14vh;
             height: 14vh;
             top: 42.7vh;
-            left: 15.8vh;" version="1.1" x="0px" y="0px" viewBox="0 0 708.25 709.24"
-                style="position:absolute; width: 13vh;
+            left: 15.8vh;" version="1.1" x="0px" y="0px" viewBox="0 0 708.25 709.24" style="position:absolute; width: 13vh;
                 height: 13vh;
                 top: 43.5vh;
                 left: 16.5vh;" xml:space="preserve">
-                <g id="hourHand" style="transform-origin: center; transition: transform 0.7s ease;">
-                    <linearGradient id="linear-gradient" gradientUnits="userSpaceOnUse" x1="2373.8569" y1="-975.8845"
-                        x2="2579.5" y2="-975.8845"
-                        gradientTransform="matrix(3.467851e-03 -1 1 3.467851e-03 1321.8618 2747.7175)">
-                        <stop offset="0.3988" style="stop-color:#A700E9" />
-                        <stop offset="1" style="stop-color:#FF1528" />
-                    </linearGradient>
-                    <path
-                        d="M351.66,197.87c-0.99,0.01-6.19,0.3-9.16,4.91c-0.01,0.02-0.86,1.76-3.02,2.27
+                    <g id="hourHand" style="transform-origin: center; transition: transform 0.7s ease;">
+                        <linearGradient id="linear-gradient" gradientUnits="userSpaceOnUse" x1="2373.8569"
+                            y1="-975.8845" x2="2579.5" y2="-975.8845"
+                            gradientTransform="matrix(3.467851e-03 -1 1 3.467851e-03 1321.8618 2747.7175)">
+                            <stop offset="0.3988" style="stop-color:#A700E9" />
+                            <stop offset="1" style="stop-color:#FF1528" />
+                        </linearGradient>
+                        <path
+                            d="M351.66,197.87c-0.99,0.01-6.19,0.3-9.16,4.91c-0.01,0.02-0.86,1.76-3.02,2.27
                              c-0.47,0.11-0.71,0.4-0.7,0.82c0.05,1.53,4,4.98,9.52,5.96c-0.47,1.68-4.28,14.88-7.62,16.69l-6.11,1.09l0.09,0.2
                              c0.02,0.04,1.76,3.6,5.36,6.82c0.14,0.41,1.31,4.02-0.26,5.94c-0.87,1.06-2.43,1.43-4.66,1.1c-0.06-0.01-5.63-0.5-8.89,5.11
                              c-0.47,0.81-0.88,1.56-1.27,2.28c-2.3,4.22-3.7,6.77-10.16,7.93l-0.08,0.01l-0.04,0.07c-0.02,0.03-0.38,0.76,0.04,1.79
@@ -2089,10 +2013,10 @@
                              c-0.18-0.26-4.19-6.22-6.31-7.78c0.93-0.63,4.77-3.39,6.37-6.8l0.1-25.87l-0.07-0.05c-0.12-0.09-12.34-9.38-9.51-14.67
                              c0.61-1.15,1.44-1.79,2.46-1.92c3.02-0.38,6.84,3.77,6.87,3.81l0.29,0.31l0.29-0.31C355.01,235.35,358.85,231.23,361.87,231.63z
                               M354.76,212.31l1.94,0.01c-0.58,4.56,3.57,10.91,4.4,12.13l-6.39,1.67l-6.38-1.71c0.84-1.21,5.03-7.54,4.49-12.1L354.76,212.31z" />
-                </g>
-                <g id="minHand" style="transform-origin: center; transition: transform 0.7s ease;">
-                    <path
-                        d="M354.65,111.28c1.5,19.79-6.71,42.25-6.71,42.25c6.29-1.17,5.71,1.83,5.71,1.83
+                    </g>
+                    <g id="minHand" style="transform-origin: center; transition: transform 0.7s ease;">
+                        <path
+                            d="M354.65,111.28c1.5,19.79-6.71,42.25-6.71,42.25c6.29-1.17,5.71,1.83,5.71,1.83
                          c4.52,16.35-12.45,54.22-12.45,54.22c-2.02,14.41,2.33,19.46,2.33,19.46c-9.8,3.91,0.42,5.7,0.42,5.7
                          c28.39,4.06,11.05,28.83,11.05,28.83c-20.17,21.69-10.43,48.13-10.43,48.13l-3.72,1.09c2.62,0.45,2.6,5.28,2.6,5.28
                          c-1.97,1.97-1.32,3.07-1.32,3.07c2.4,1.11,1.3,3.96,1.3,3.96c-4.61,6.79,0.84,9.67,0.84,9.67l-1.1,1.75
@@ -2106,65 +2030,36 @@
                          c4.31,16.87-12.29,14.56-12.29,14.56c-7.86-3.09,0.89-4.15,1.55-6.77c0.66-2.62-3.27-3.76-3.27-3.76c5.94-5.04,2.2-5.64,2.2-5.64
                          c-3.93-1.11-3.92-3.95-3.92-3.95C361.84,324.24,362.03,333.89,362.03,333.89z M357.85,277.69c6.54,5.7-2.58,24.24-2.76,27.52
                          c-0.18,3.28,7.73,12.48,7.73,12.48s2.1,1.46-2.27,3.01c0,0-14.84-5.91-13.05-18.58C349.29,289.46,351.32,271.98,357.85,277.69z" />
-                </g>
-            </svg>
-            <img src="clock_tower.png" style="height: 100%;" />
-        </div>
-        
-        <p>Hint: use swipe up and down</p>
-    </div>
-    <div id="c3" class="screen" style="display: none;">
-        <div id="c3-area" style="position: relative; width: 100%; height: 100%;">
-            <div style="width:100%; height: 20%;">
-            </div>
-            <div style="
-                position: absolute;
-                top: 0;
-                height: 100%;
-                width: 100%;
-                text-align: center;">
-                <img id="book" src="book.png" style="width: 30vw; opacity: 0;"></img>
+                    </g>
+                </svg>
+                <img src="clock_tower.png" style="height: 100%;" />
             </div>
 
-            <div id="c3-story-text" class="story-txt">
-                <h1>Chapter 3: Old tales</h1>
-                <p>There are many stories. Let's find a place with more stories.</br>
-                    To do this, first, we need to remember an old tale.</br>
-                    It is a tale about a man and a dream.</br>
-                    Follow the name of that man until you find the place.</p>
-                <p>Hint: a sign, music band, coffee.</p>
-                <p>What is the name of the place (in english)?</p>
-            </div>
-            <input id="c3-key" style="opacity: 0;" type="input" required />
-            <div id="c3-try-again" style="opacity: 0;">
-                <p>Try again</p>
-            </div>
+            <p style="position: relative; top: 5%;">Hint: use swipe up and down</p>
         </div>
     </div>
     <div id="c3-intermission" class="screen" style="display: none;">
-        <div id="c3-intermission-cont" class="c3-intermission-cont" style="position: relative; width: 100%;
-            height: 100%;overflow: hidden;">
-            <img id="o-wolf" src="wolf.png" style="display: none;" />
-            <img id="o-castle" src="castle.png" style="display: none;" />
-            <img id="o-book" src="obook.png" style="display: none;" />
+        <div id="bell-container" style="width: 100%;
+        height: 100%;
+        display: flex;
+        opacity: 0;">
+            <img id="bellImage" src="bell.png" alt="Christmas Bell">
         </div>
-        <p id="c3-msg" style="display: none; position: relative; top: 40%; color: white;" class="msg-txt">
-            We will come back to this place.</br>But before that...
-        </p>
     </div>
     <div id="c4" class="screen" style="display: none;">
-        <div style="width:100%; height: 20%;">
-            <img id="map" src="map.png" style="width: 20%; 
-                display: block;margin-left: auto;margin-right: auto;position: relative;"></img>
-        </div>
-        <div id="c4-story-text" class="story-txt">
-            <h1>Chapter 4: Hidden meanings</h1>
+        <div style="position: relative; top: 5%;" id="c4-story-text" class="story-txt">
+            <h1>Chapter 4: The town and the river</h1>
 
-            <p>Stories have secret meanings.</br>
-                An observant reader will notice the tiniest of details.</br>
-                Explore and find it. You will know when you see it.
+            <p>You need to go to a town across the river.</br>
+                Follow the streat with the same name until the end.</br>
+                Look for a clue.
             </p>
-            <p>Hint: a flower, Christmas, a street.</p>
+        </div>
+        <div style="width:100%; height: 20%;">
+            <img id="town" src="town.png" style="width: 35vh; 
+                display: block;margin-left: auto;margin-right: auto;position: relative; top: 15%; opacity: 0;"></img>
+        </div>
+        <div id="c4-story-text-2" class="story-txt" style="padding-top: 17vh;">
             <p>What have you found?</p>
         </div>
         <input id="c4-key" style="opacity: 0;" type="input" required />
@@ -2173,40 +2068,31 @@
         </div>
     </div>
     <div id="c4-intermission" class="screen" style="display: none;">
-        <div style="position: relative; width: 100%; height: 100%;">
-            <img id="cat" src="cat.svg"
-                style="opacity: 0; position: absolute; translate: -50% -50%; top: 40%; left: 50%; width: 24vw; color: white;"></img>
-            <p id="c4-msg" style="display: none; position: relative; top: 40%; color: white;" class="msg-txt">
-                Let us come back to the other stories...
-            </p>
-            <div id="c4-btn" style="
-                display: none;
-                position: relative;
-                top: 38%;
-                color: white;
-                margin-left: auto;
-                margin-right: auto;
-                width: 9%;
-                font-size: 5vh;
-                opacity: 0;
-                filter: blur(4px);">
-                &#x27BC;
-            </div>
+        <div id="c4-intermision-container" style="
+            display: none;
+            opacity: 0;
+            overflow: hidden;
+            position: relative;
+            width: 100%;
+            height: 100%;">
+            <img src="ktn.gif" id="ktn-anim"
+                style="position: absolute; translate: -150% -50%; top: 41%; width: 80%;"></img>
         </div>
     </div>
     <div id="c5" class="screen" style="display: none;">
-        <div style="width:100%; height: 20%;">
-            <img id="rabbit" src="rabbit.svg" style="width: 20%; 
-                display: block;margin-left: auto;margin-right: auto;position: relative;"></img>
-        </div>
-        <div id="c5-story-text" class="story-txt">
-            <h1>Chapter 5: Down the rabbit hole</h1>
+        <div style="position: relative; top: 5%;" id="c5-story-text" class="story-txt">
+            <h1>Chapter 5: Warm food</h1>
 
-            <p>Follow the white rabbit.</br>
-                Find the image of the cat from the previous chapter.</br>
-                Find the number in that page.</br>
+            <p>We all know cats like tuna.</br>
+                But cats prefer cozy and warm food as well, you can't eat tuna alone!</br>
             </p>
-            <p>What is the number?</p>
+        </div>
+        <div style="width:100%; height: 20%;">
+            <img id="oven" src="oven.png" style="width: 35vh; 
+                display: block;margin-left: auto;margin-right: auto;position: relative; top: 30%; opacity: 0;"></img>
+        </div>
+        <div id="c5-story-text-2" class="story-txt" style="padding-top: 24vh;">
+            <p>Name of the dish?</p>
         </div>
         <input id="c5-key" style="opacity: 0;" type="input" required />
         <div id="c5-try-again" style="opacity: 0;">
@@ -2216,132 +2102,69 @@
 
     <div id="c5-intermision" class="screen" style="display: none;">
         <div id="c5-intermision-container" style="
-            display: none;
             opacity: 0;
-            background: white;
             overflow: hidden;
             position: relative;
             width: 100%;
-            height: 100%;">
-            <img src="rabbit_background.png" id="rabbit-background"
-                style="position: absolute; translate: -10% -50%; top: 40%; width: 120%; height: 40%; background-size: 100% 100%;"></img>
-            <img src="rabbit.gif" id="rabbit-anim"
-                style="position: absolute; translate: -150% -50%; top: 41%; width: 80%;"></img>
+            height: 100%;
+            display: flex;
+            justify-content: center;">
+            <img src="pizza.gif" id="pizza" style="width: 30vh;
+                height: 30vh;
+                position: relative;
+                top: 20%;"></img>
         </div>
     </div>
 
     <div id="c6" class="screen" style="display: none;">
-        <div id="c6-container">
-            <div style="width: 100%; height: 15%; position: relative; background: black;">
-                <img id="music" src="sound.svg" style="translate: -50% -50%; fill: white;
-                        display: block;top: 10%; left: 50%; width: 5%; position: absolute;"></img>
+        <div id="c6-container" style="width: 100%;
+        height: 100%;">
+            <div id="c6-story-text" class="story-txt" style="position: relative;top: 5%;">
+                <h1>Chapter 6: Cozy</h1>
+                <p>You know where you need to go to get cozy.
+                <p>
             </div>
-            <div id="c6-story-text" class="story-txt">
-                <h1>Chapter 6: Sound</h1>
-
-                <p>Some places have a special feeling.</br>
-                    This feeling can be associated with scent, time and sound.</br>
-                    Find the place associated with the sound and enter it.</p>
-                <input id="play-sound" style="
-                    background: white;
-                    color: black;
-                    width: 20%;
-                    text-align: center;
-                    font-family: Sofia;
-                    margin-left: auto;
-                    margin-right: auto;
-                    display: block;
-                    font-size: 2vh;
-                    border: 0;" value="Play &#x266A;" type="button" />
-                <p>What does the sign say?</p>
+            <div id="c6-img" style="width: 100%; display: flex; justify-content: center; opacity: 0; position: relative;
+            top: 10%;">
+                <img style="width: 60%;" src="cozy.gif"></img>
             </div>
-            <input id="c6-key" style="opacity: 0;" type="input" required />
-            <div id="c6-try-again" style="opacity: 0;">
-                <p>Try again</p>
+            <div id="c6-btn" style="
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                position: relative;
+                top: 15%;
+                color:rgb(234, 83, 90);
+                opacity: 0;
+                height: 6vh;">
+                <span style="font-size: 2.0vh;">I am cozy now</span>
+                <span style="font-size: 4vh; padding-left: 2vw;">&#x27BC;</span>
             </div>
         </div>
-        <div id="sound-box" class="sound-box" style="display: none; opacity: 0;">
-            <audio id="morse-sound" src="morse.wav" style="display: none;"></audio>
-            <div id="morse-button" class="circle" onclick="chapter6sound()"></div>
-            <div id="morse-c1" class="pulse1"></div>
-            <div id="morse-c2" class="pulse2"></div>
-        </div>
-    </div>
-
-    <div id="c6-intermission" class="screen" style="display: none;">
-        <div id="c6-intermission-container" style="
-            position: relative;
-            width: 100%;
-            height: 100%;
-            background-color: black;">
-            <div id="christmas-tree" class="christmas-tree">
-                <div id="tree" class="tree">
-                    <div class="tree-details"></div>
-                </div>
-                <div id="tree-lights" class="lights">
-                    <div class="row-one"></div>
-                    <div class="row-two"></div>
-                </div>
-                <div id="tree-balls" class="balls"></div>
-                <div id="tree-star" class="star"></div>
-                <div class="shadow"></div>
-            </div>
-            <div id="gift" class="gift-start gift">
-                <div id="gift-top" class="gift-top"></div>
-                <div class="gift-box"></div>
-            </div>
-            <div id="greet" style="display:none">
-                <p>My kitttyyy,</p>
-                <p>I wish you a happy new year,</p>
-                <p>love, happiness and warmth in 2023.</p>
-                <p>I hope you are enjoying this special gift.</p>
-                <p>I love you very much.</p>
-                <div id="c6-btn" style="
-                    display: none;
-                    position: relative;
-                    top: 50%;
-                    color: white;
-                    margin-left: auto;
-                    margin-right: auto;
-                    width: 9%;
-                    font-size: 5vh;
-                    opacity: 0;
-                    filter: blur(4px);">
-                    &#x27BC;
-                </div>
-            </div>
-
-            &#x27BC;
-        </div>
-    </div>
-    <div id="new-splash" class="screen" style="background:rgb(250, 240, 229); display: none; opacity: 0;">
-        <img src="splash.gif" style="width: 60%;
-        display: block;
-        margin-left: auto;
-        margin-right: auto;
-        padding-top: 30%;"></img>
-
-        <h1 id="new-game"
-            style="opacity: 0; color:rgb(234, 83, 90); text-align: center; font-size: 5vh; font-family: Sniglet;">
-            Begin the story again</h1>
     </div>
 
     <div id="c7" class="screen" style="display: none;">
-        <div style="width:100%; height: 20%;">
-            <img id="ouroboros" src="ouroboros.svg" style="width: 20%; 
-                display: block;margin-left: auto;margin-right: auto;position: relative;"></img>
-        </div>
-        <div id="c7-story-text" class="story-txt">
-            <h1>Chapter 7: Ouroboros</h1>
-            <p>Every story needs a time and place.</br>
-                And you have been here before...</br></p>
-            <p>Hint: the ___________ story</p>
-            <p>So what kind of story is this?</p>
+        <div style="position: relative; top: 5%;" id="c7-story-text" class="story-txt">
+            <h1>Chapter 7: Secret passages</h1>
 
+            <p>It is a street. You walked past it on your way here.</br>
+                The hint is here.</br>
+            </p>
+        </div>
+        <div style="width:100%; height: 20%;">
+            <img id="tower" src="tower.png" style="width: 30vh; 
+                display: block;margin-left: auto;margin-right: auto;position: relative; top: 30%; opacity: 0;"></img>
+        </div>
+        <div id="c7-story-text-2" class="story-txt" style="padding-top: 24vh;">
+            <p>Name of the street?</p>
         </div>
         <input id="c7-key" style="opacity: 0;" type="input" required />
         <div id="c7-try-again" style="opacity: 0;">
             <p>Try again</p>
+        </div>
+        <div id="c7-answer" style="opacity: 0;">
+            <p><span id="c7-a1" class="c7-span">S</span><span class="c7-span" id="c7-a2">P</span><span class="c7-span"
+                    id="c7-a3">A</span></p>
         </div>
     </div>
 
@@ -2389,20 +2212,20 @@
         </div>
     </div>
     <div id="c8" class="screen" style="display: none;">
-        <div style="width:100%; height: 15%;">
-            <img id="coffee" src="coffee.gif" style="width: 20%; 
-                display: block;margin-left: auto;margin-right: auto;position: relative;"></img>
-        </div>
-        <div id="c8-story-text" class="story-txt">
-            <h1>Chapter 8: One more thing...</h1>
-            <p>Hot coffee and an interesting story are perfect in this weather.</br>
-                But seasons change,</br>and thoughts of summer will soon be on our minds.</p>
-            <p>You saw a sign today, what did it say?</p>
+        <div id="c8-cont">
+            <h1 style="padding-top: 5vh; font-size: 3vh">Chapter 9: Relaxing at SPA</h1>
+            <p>On 2023-12-22 14:00!</p>
+            <img src="bath.gif" style="width: 60%;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        padding-top: 5%;"></img>
+            <!-- <div style="width:100%; margin-top: 300px;">
+            <img src="splash.gif" class="splash-image"></img>
+        </div> -->
 
-        </div>
-        <input id="c8-key" style="opacity: 0;" type="input" required />
-        <div id="c8-try-again" style="opacity: 0;">
-            <p>Try again</p>
+            <h1 id="c8-countdown"
+                style="color:rgb(234, 83, 90); text-align: center; font-size: 2.5vh; font-family: Sniglet;"></h1>
         </div>
     </div>
 
