@@ -1621,7 +1621,7 @@
                 const min = Math.round(time.getMinutes() / 5);
                 cur_h = Math.round(h_value / 360 * 12);
                 cur_m = Math.round(m_value / 360 * 12);
-                if (cur_h > 1 || (cur_h == h && cur_m == min)) {
+                if (cur_h == h && cur_m == min) {
                     minR = time.getMinutes() * 6;
                     hrR = h * (360 / 12);
                     swipeArea.removeEventListener('touchstart', handleTouchStart, false);
@@ -1643,7 +1643,8 @@
         // Rotate clock hands
         function rotate(hand, angle) {
             //hand.setAttribute('transform-origin', 'top left');
-            hand.setAttribute('transform', `rotate(${angle})`);
+            //hand.set('transform', `rotate(${angle})`);
+            hand.style.transform = "rotate(" + angle + "deg)";
         }
 
         clock();
