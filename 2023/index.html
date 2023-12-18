@@ -184,7 +184,7 @@
         }
 
         .bell-animation {
-            animation: ring 3s linear 2;
+            animation: ring 2.5s linear 2;
             /* Adjust the timing and repetition as needed */
         }
 
@@ -1201,11 +1201,11 @@
 
         @keyframes SledFrames {
             0% {
-                translate: -150% 190%;
+                translate: -100% 190%;
             }
 
             100% {
-                translate: 150% -180%;
+                translate: 180% -180%;
             }
         }
 
@@ -1337,13 +1337,44 @@
         { opacity: 0, easing: 'ease-out' }
     ];
     var countDownDate = new Date("2023-12-22 14:00:00").getTime();
+    //var countDownDate = new Date("2023-12-18 17:54:30").getTime();
 
     function chapter8() {
         window.location.hash = 'fe5d';
         document.getElementById("c8").style.display = "block";
         document.getElementById("c8-cont").classList.add("fade-in");
+        endCountdown = false;
+        function show_question() {
+            document.getElementById("c8-question").style.display = "block";
+            document.getElementById("c8-question").classList.add("fade-in");
+            document.getElementById("c8-key").onkeyup = (event) => {
+                if (event.keyCode === 13) {
+                    event.preventDefault();
+                    event.target.blur();
+                    window.scrollTo(0, 0);
+                    document.body.scrollTop = 0;
+                    answer = event.target.value.toLowerCase().replace(' ', '');
+                    if (answer == 'rose' || answer == 'roze') {
+                        document.getElementById("c8-key").onkeyup = null;
+                        document.getElementById("c8").classList.add('fade-out-screen');
+                        setTimeout(() => {
+                            document.getElementById("c8").style.display = "none";
+                            outro();
+                        }, 1600);
+                    }
+                    else {
+                        event.target.value = "";
+                        document.getElementById("c8-try-again").animate(showTryAgain, 2000);
+                    }
+                }
+            }
+        }
         function update_countdown() {
             var now = new Date().getTime();
+            if (now > countDownDate) {
+                endCountdown = true;
+                return;
+            }
             var distance = countDownDate - now;
             var days = Math.floor(distance / (1000 * 60 * 60 * 24));
             var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
@@ -1353,50 +1384,30 @@
                 + minutes + "m " + seconds + "s ";
             return distance;
         }
-        update_countdown()
-        var x = setInterval(function () {
-            distance = update_countdown()
-        }, 1000);
+        if (new Date().getTime() <= countDownDate){
+            document.getElementById("c8-countdown").style.display = "block";
+            update_countdown()
+            var x = setInterval(function () {
+                if (endCountdown) {
+                    clearInterval(x);
+                    document.getElementById("c8-countdown").classList.add('fade-out-screen');
+                    setTimeout(() => {
+                        document.getElementById("c8-countdown").style.display = "none";
+                        show_question();
+                    }, 1000);
+                }
+                distance = update_countdown()
+            }, 1000);
+        }
+        else {
+            show_question();
+        }
     }
 
     function outro() {
         window.location.hash = '1985';
         document.getElementById("outro").style.display = "block";
-        snake = document.getElementById("snake");
-        setTimeout(() => {
-            snake.style.display = "block";
-            snake.classList.add('snake');
-            snake.classList.add('snake-intro');
-            setTimeout(() => {
-                document.getElementById("outro-text-h").classList.add('story-txt-fadein');
-                setTimeout(() => {
-                    document.getElementById("outro-text-d").classList.add('story-txt-fadein');
-                    setTimeout(() => {
-                        document.getElementById("outro-text-g").classList.add('story-txt-fadein');
-                        setTimeout(() => {
-                            document.getElementById('outro-btn').classList.add('story-txt-fadein');
-                            document.getElementById('outro-btn').onclick = () => {
-                                document.getElementById('outro-btn').onclick = null;
-                                document.getElementById("outro").classList.add('fade-out-screen');
-                                setTimeout(() => {
-                                    document.getElementById("outro").style.display = "none";
-                                    chapter8();
-                                }, 1600);
-                            }
-                        }, 2000);
-
-                    }, 3000);
-                }, 2000);
-            }, 1500);
-            setTimeout(() => {
-                snake.style.opacity = 1;
-                snake.style.width = '50%';
-                snake.classList.remove('snake-intro');
-                snake.classList.add('snake-rotate');
-
-            }, 1000);
-        }, 800);
-
+        document.getElementById("outro-cont").classList.add("fade-in");
     }
 
     function chapter7() {
@@ -1598,15 +1609,17 @@
                 }, 9000);
                 setTimeout(() => {
                     document.getElementById("sled-anim").classList.add("sled");
-                }, 3500);
+                }, 2000);
                 setTimeout(() => {
                     document.getElementById("bell-container").classList.add("fade-out-screen");
                     setTimeout(() => {
                         document.getElementById("c3-intermission").style.display = "none";
                         chapter4();
-                    }, 1000);
+                    }, 1500);
                 }, 6000);
-            }, 3000);
+                var audio = new Audio('sound.mp3');
+                audio.play();
+            }, 2000);
         }, 2000);
 
         let canvas = document.getElementById("canvas");
@@ -1683,7 +1696,7 @@
             this.x = Math.random() * width;
             this.y = Math.random() * height - height;
             this.alpha = alphaValue; //1
-            this.vy = vyValue * 10; //0.3
+            this.vy = vyValue * 20; //0.3
         }
 
         Particle.prototype = {
@@ -1920,12 +1933,16 @@
                 splash_ready();
             }
         } else {
+            var now = new Date().getTime();
+            if (now > countDownDate)
+                chapter8();
+            else
+                splash_ready();
             // var now = new Date().getTime();
             // var distance = countDownDate - now;
             // if (distance > 0)
             //     splash_countdown();
             // else
-            splash_ready();
         }
     };
 
@@ -2220,46 +2237,14 @@
     </div>
 
     <div id="outro" class="screen" style="display: none;">
-        <div class="c3-intermission-cont" style="position: relative; width: 100%;
-            height: 100%;overflow: hidden;">
-            <div id="outro-text-h" class="story-txt" style="translate: -50% -50%;
-            left: 50%;
-            top: 10%;
-            position: absolute;
-            width: 100%;
-            ">
-                <h1>Congratulations</br>you have unlocked the treasure!</h1>
-            </div>
-            <img id="snake" src="ouroboros.png" style="width: 100%; 
-                display: none;"></img>
-            <div id="outro-text-d" class="story-txt" style="translate: -50% -50%;
-                left: 50%;
-                top: 50%;
-                position: absolute;
-                width: 100%;
-                ">
-                <p>The treasure can be found at</br> Dominikonu g. 4 </br> using the code 810956</p>
-            </div>
-            <div id="outro-text-g" class="story-txt" style="translate: -50% -50%;
-                left: 50%;
-                top: 60%;
-                position: absolute;
-                width: 100%;
-                ">
-                <h1>This is our story</h1>
-
-            </div>
-            <div id="outro-btn" style="position: relative;
-                    top: 62%;
-                    color: #AFAFAF;
-                    margin-left: auto;
-                    margin-right: auto;
-                    width: 9%;
-                    font-size: 5vh;
-                    opacity: 0;
-                    filter: blur(4px);">
-                &#x27BC;
-            </div>
+        <div id="outro-cont" style="position: relative; width: 100%;
+            height: 100%;overflow: hidden; opacity: 0;">
+            <img src="santa.gif" style="width: 80%;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            padding-top: 35%;"></img>
+            <div style="width: 100%; position: absolute; height: 5vh; background-color: #FAF0E5; top: 60%;"></div>
         </div>
     </div>
     <div id="c8" class="screen" style="display: none;">
@@ -2276,7 +2261,14 @@
         </div> -->
 
             <h1 id="c8-countdown"
-                style="color:rgb(234, 83, 90); text-align: center; font-size: 2.5vh; font-family: Sniglet;"></h1>
+                style="color:rgb(234, 83, 90); text-align: center; font-size: 2.5vh; font-family: Sniglet; display: none;"></h1>
+            <div id="c8-question" style="opacity: 0; display: none;">
+                <p>Name of a flower?</p>
+                <input id="c8-key" type="input" required />
+                <div id="c8-try-again" style="opacity: 0;">
+                    <p>Try again</p>
+                </div>
+            </div>
         </div>
     </div>
 
