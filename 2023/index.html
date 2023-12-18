@@ -1384,7 +1384,7 @@
                 + minutes + "m " + seconds + "s ";
             return distance;
         }
-        if (new Date().getTime() <= countDownDate){
+        if (new Date().getTime() <= countDownDate) {
             document.getElementById("c8-countdown").style.display = "block";
             update_countdown()
             var x = setInterval(function () {
@@ -1600,27 +1600,32 @@
     function intermision3() {
         exit = false;
         document.getElementById("c3-intermission").style.display = "block";
+        function start() {
+            document.getElementById('bell-sound').play();
+            document.getElementById("bellImage").classList.add("bell-animation");
+            setTimeout(() => {
+                exit = true;
+            }, 9000);
+            setTimeout(() => {
+                document.getElementById("sled-anim").classList.add("sled");
+            }, 2000);
+            setTimeout(() => {
+                document.getElementById("bell-container").classList.add("fade-out-screen");
+                setTimeout(() => {
+                    document.getElementById("c3-intermission").style.display = "none";
+                    chapter4();
+                }, 1500);
+            }, 6000);
+        }
         setTimeout(() => {
             document.getElementById("bell-container").classList.add("fade-in-slow");
             setTimeout(() => {
-                document.getElementById("bellImage").classList.add("bell-animation");
-                setTimeout(() => {
-                    exit = true;
-                }, 9000);
-                setTimeout(() => {
-                    document.getElementById("sled-anim").classList.add("sled");
-                }, 2000);
-                setTimeout(() => {
-                    document.getElementById("bell-container").classList.add("fade-out-screen");
-                    setTimeout(() => {
-                        document.getElementById("c3-intermission").style.display = "none";
-                        chapter4();
-                    }, 1500);
-                }, 6000);
-                var audio = new Audio('sound.mp3');
-                audio.play();
-            }, 2000);
-        }, 2000);
+                document.getElementById("bellImage").onclick = function () {
+                    start();
+                }
+            }, 1000);
+        }, 1000);
+
 
         let canvas = document.getElementById("canvas");
         canvas.width = 430;
@@ -2098,6 +2103,7 @@
         </div>
     </div>
     <div id="c3-intermission" class="screen" style="display: none;">
+        <audio id="bell-sound" src="sound.mp3" style="display: none;"></audio>
         <div id="bell-container" style="width: 100%;
         opacity: 0;
             overflow: hidden;
@@ -2261,7 +2267,8 @@
         </div> -->
 
             <h1 id="c8-countdown"
-                style="color:rgb(234, 83, 90); text-align: center; font-size: 2.5vh; font-family: Sniglet; display: none;"></h1>
+                style="color:rgb(234, 83, 90); text-align: center; font-size: 2.5vh; font-family: Sniglet; display: none;">
+            </h1>
             <div id="c8-question" style="opacity: 0; display: none;">
                 <p>Name of a flower?</p>
                 <input id="c8-key" type="input" required />
