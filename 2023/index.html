@@ -1201,7 +1201,7 @@
 
         @keyframes SledFrames {
             0% {
-                translate: -150% 180%;
+                translate: -150% 190%;
             }
 
             100% {
@@ -1211,7 +1211,7 @@
 
         .sled {
             transform: scale(-1, 1);
-            animation: SledFrames 4.0s linear forwards;
+            animation: SledFrames 3.0s linear forwards;
         }
 
         @keyframes centerImgShow {
@@ -1596,8 +1596,15 @@
                 }, 9000);
                 setTimeout(() => {
                     document.getElementById("sled-anim").classList.add("sled");
-                }, 3000);
-            }, 4000);
+                }, 3500);
+                setTimeout(() => {
+                    document.getElementById("bell-container").classList.add("fade-out-screen");
+                    setTimeout(() => {
+                        document.getElementById("c3-intermission").style.display = "none";
+                        chapter4();
+                    }, 1000);
+                }, 6000);
+            }, 3000);
         }, 2000);
 
         let canvas = document.getElementById("canvas");
@@ -1693,13 +1700,7 @@
             }
         };
         window.requestAnimationFrame(startSnowfall);
-        // setTimeout(() => {
-        //     document.getElementById("bell-container").classList.add("fade-out-screen");
-        //     setTimeout(() => {
-        //         document.getElementById("c3-intermission").style.display = "none";
-        //         chapter4();
-        //     }, 1000);
-        // }, 5000);
+
     }
 
     function chapter3() {
@@ -1922,7 +1923,7 @@
             // if (distance > 0)
             //     splash_countdown();
             // else
-            intermision3();
+            splash_ready();
         }
     };
 
