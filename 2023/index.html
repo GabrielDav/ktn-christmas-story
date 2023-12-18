@@ -143,34 +143,58 @@
             transition-timing-function: ease-out;
         }
 
-        @keyframes swing {
+        @keyframes ring {
 
-            0%,
+            0% {
+                transform: rotate(0deg);
+            }
+
+            12% {
+                transform: rotate(30deg);
+            }
+
+            20% {
+                transform: rotate(-25deg);
+            }
+
+            28% {
+                transform: rotate(20deg);
+            }
+
+            41.2% {
+                transform: rotate(-10deg);
+            }
+
+            52.5% {
+                transform: rotate(5deg);
+            }
+
+            64% {
+                transform: rotate(-2deg);
+            }
+
+            80% {
+                transform: rotate(0deg);
+            }
+
             100% {
                 transform: rotate(0deg);
             }
 
-            25% {
-                transform: rotate(-16deg);
-                /* Adjust angle for more or less swing */
-            }
+        }
 
-            50% {
-                transform: rotate(16deg);
-            }
-
-            75% {
-                transform: rotate(-16deg);
-            }
+        .bell-animation {
+            animation: ring 3s linear 2;
+            /* Adjust the timing and repetition as needed */
         }
 
         #bellImage {
             display: block;
             margin: auto;
-            margin-top: 60%;
-            width: 20vh;
+            margin-top: 20%;
+            width: 15vh;
             transform-origin: top center;
-            animation: swing 1.3s ease-in-out 1s 3;
+            /* animation: ring 2.5s linear 2; */
             /* Adjust the timing and repetition as needed */
         }
 
@@ -1547,14 +1571,112 @@
 
     function intermision3() {
         document.getElementById("c3-intermission").style.display = "block";
-        document.getElementById("bell-container").classList.add("fade-in");
         setTimeout(() => {
-            document.getElementById("bell-container").classList.add("fade-out");
+            document.getElementById("bell-container").classList.add("fade-in-slow");
             setTimeout(() => {
-                document.getElementById("c3-intermission").style.display = "none";
-                chapter4();
-            }, 1000);
-        }, 4700);
+                document.getElementById("bellImage").classList.add("bell-animation");
+            }, 3000);
+        }, 3000);
+        
+        let canvas = document.getElementById("canvas");
+        canvas.width = 430;
+        canvas.height = 932;
+        let context = canvas.getContext("2d");
+        let width = window.innerWidth;
+        let height = window.innerHeight;
+        let nearParticles = [],
+            middleParticles = [],
+            farParticles = [];
+
+        let particleSettings = {
+            count: 250 //count for each layer increase/reduce based on requirement
+        };
+
+        window.requestAnimationFrame =
+            window.requestAnimationFrame ||
+            window.webkitRequestAnimationFrame ||
+            window.mozRequestAnimationFrame ||
+            window.oRequestAnimationFrame ||
+            window.msRequestAnimationFrame ||
+            function (callback) {
+                window.setTimeout(callback, 1000 / 60);
+            };
+
+        //random number between range
+        function randomNumberGenerator(min, max) {
+            return Math.random() * (max - min) + min;
+        }
+
+        function createSnowfall(particles, flag) {
+            while (particles.length < particleSettings.count) {
+                let particle;
+                //create particles based on flag
+                if (flag == "near") {
+                    //Particle(area,alpha,vy)area=size,alpha=blur,vy=falling speed
+                    particle = new Particle(4, 0.9, 0.3);
+                } else if (flag == "middle") {
+                    particle = new Particle(3, 0.5, 0.2);
+                } else {
+                    particle = new Particle(2, 0.3, 0.1);
+                }
+                particle.color = `rgb(255,255,255)`;
+                particles.push(particle);
+            }
+        }
+
+        function startSnowfall() {
+            //black background
+            context.fillStyle = "rgba(250, 240, 229, 1)";
+            context.fillRect(0, 0, width, height);
+            //create snowfall
+            createSnowfall(nearParticles, "near");
+            createSnowfall(farParticles, "far");
+            createSnowfall(middleParticles, "middle");
+            //combine all and sort randomly
+            particles = [...nearParticles, ...middleParticles, ...farParticles];
+            particles = particles.sort(() => 0.5 - Math.random());
+            for (let i in particles) {
+                particles[i].draw();
+                //if particle has crossed the screen height
+                if (particles[i].y > height) {
+                    //reset the particle's y
+                    particles[i].y = Math.random() * height - height;
+                }
+            }
+            window.requestAnimationFrame(startSnowfall);
+        }
+
+        function Particle(areaValue, alphaValue, vyValue) {
+            this.area = areaValue; //4
+            this.x = Math.random() * width;
+            this.y = Math.random() * height - height;
+            this.alpha = alphaValue; //1
+            this.vy = vyValue * 10; //0.3
+        }
+
+        Particle.prototype = {
+            draw: function () {
+                //based on confetti code
+                this.y += (Math.cos(this.area) + this.vy) * 0.6;
+                context.save();
+                context.beginPath();
+                //circle
+                context.arc(this.x, this.y, 4, 0, Math.PI * 2);
+                context.fillStyle = this.color;
+                context.globalAlpha = this.alpha;
+                context.closePath();
+                context.fill();
+                context.restore();
+            }
+        };
+        window.requestAnimationFrame(startSnowfall);
+        // setTimeout(() => {
+        //     document.getElementById("bell-container").classList.add("fade-out-screen");
+        //     setTimeout(() => {
+        //         document.getElementById("c3-intermission").style.display = "none";
+        //         chapter4();
+        //     }, 1000);
+        // }, 5000);
     }
 
     function chapter3() {
@@ -1777,7 +1899,7 @@
             // if (distance > 0)
             //     splash_countdown();
             // else
-            splash_ready();
+            intermision3();
         }
     };
 
@@ -1856,15 +1978,14 @@
             </p>
             <div id="clock-panel"
                 style="height: 64vh; display: flex; justify-content: center; position: relative; top: 5%;">
-                <div id="hourHand"
-                    style="position: absolute;
+                <div id="hourHand" style="position: absolute;
                     transform-origin: center;
                     width: 14vh;
                     height: 14vh;
                     top: 18.5vh;
                     left: 37%;
                     transition: transform 0.7s ease;">
-                    <svg version="1.1" x="0px" y="0px" viewBox="0 0 708.25 709.24"  xml:space="preserve">
+                    <svg version="1.1" x="0px" y="0px" viewBox="0 0 708.25 709.24" xml:space="preserve">
                         <g>
                             <path
                                 d="M351.66,197.87c-0.99,0.01-6.19,0.3-9.16,4.91c-0.01,0.02-0.86,1.76-3.02,2.27
@@ -1900,15 +2021,14 @@
                         </g>
                     </svg>
                 </div>
-                <div id="minHand"
-                    style="position: absolute;
+                <div id="minHand" style="position: absolute;
                     transform-origin: center;
                     width: 14vh;
                     height: 14vh;
                     top: 18.5vh;
                     left: 37%;
                     transition: transform 0.7s ease;">
-                    <svg version="1.1" x="0px" y="0px" viewBox="0 0 708.25 709.24"  xml:space="preserve">
+                    <svg version="1.1" x="0px" y="0px" viewBox="0 0 708.25 709.24" xml:space="preserve">
                         <g>
                             <path
                                 d="M354.65,111.28c1.5,19.79-6.71,42.25-6.71,42.25c6.29-1.17,5.71,1.83,5.71,1.83
@@ -1939,7 +2059,8 @@
         height: 100%;
         display: flex;
         opacity: 0;">
-            <img id="bellImage" src="bell.png" alt="Christmas Bell">
+        <canvas style="width: 100%;height: 100%;position: absolute;" id="canvas"></canvas>
+            <img style="z-index: 1;" id="bellImage" src="bell.png" alt="Christmas Bell">
         </div>
     </div>
     <div id="c4" class="screen" style="display: none;">
