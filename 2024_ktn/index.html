@@ -1,0 +1,1537 @@
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="theme-color" content="#FAF0E5" />
+    <meta charset="UTF-8" />
+    <style>
+        @font-face {
+            font-family: "Sniglet-Regular";
+            src: url(Sniglet-Regular.ttf) format("truetype");
+        }
+
+        @font-face {
+            font-family: "Sniglet";
+            src: url(Sniglet2.ttf) format("truetype");
+        }
+
+        body {
+            background: black;
+            /* width: 1284px;
+            height: 2778px; */
+            width: 428px;
+            height: 926px;
+            overflow: hidden;
+            margin: 0;
+        }
+
+        h1 {
+            color: rgb(221, 205, 206);
+            text-align: center;
+            font-size: 2.1vh;
+            font-weight: bold;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .main-txt {
+            color: rgb(221, 205, 206);
+            text-align: center;
+            font-size: 2.1vh;
+        }
+
+        p {
+            color: rgb(221, 205, 206);
+            text-align: center;
+            font-size: 2vh;
+            margin-left: 5%;
+            margin-right: 5%;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .content {
+            width: 100%;
+            height: 100%;
+            background: black;
+        }
+
+        .screen {
+            width: 100%;
+            height: 100%;
+            display: none;
+            flex-direction: column;
+            background-color: #000000;
+        }
+
+        .screen .img-container {
+            width: 100%;
+            margin-top: 20%;
+        }
+
+        .screen .img-container img {
+            width: 30%;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            position: relative;
+        }
+
+        .screen .story-txt-container {
+            opacity: 0;
+            position: relative;
+            margin-top: 10%;
+        }
+
+        .screen .answer-input {
+            opacity: 0;
+            position: relative;
+        }
+
+        .screen .try-again-container {
+            opacity: 0;
+            position: relative;
+        }
+
+        .screen .hint {
+            margin-top: 10%;
+            opacity: 0;
+        }
+
+        .screen .answer-container p {
+            opacity: 0;
+            display: none;
+            position: relative;
+        }
+
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 1s;
+            animation-fill-mode: forwards;
+        }
+
+        .fade-in-mid {
+            animation: fadeIn 3s;
+            animation-fill-mode: forwards;
+        }
+
+        .fade-in-slow {
+            animation: fadeIn 4s;
+            animation-fill-mode: forwards;
+        }
+
+        @keyframes fadeOut {
+            0% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0;
+            }
+        }
+
+        .fade-out {
+            animation: fadeOut 0.5s;
+            animation-fill-mode: forwards;
+        }
+
+        .fade-out-slow {
+            animation: fadeOut 1s;
+            animation-fill-mode: forwards;
+        }
+
+        .fade-out-screen {
+            animation: fadeOut 1.6s;
+            animation-fill-mode: forwards;
+        }
+
+        @keyframes loading {
+            0% {
+                opacity: 1;
+            }
+
+            25% {
+                opacity: 0.5;
+            }
+
+            50% {
+                opacity: 0.0;
+            }
+
+            75% {
+                opacity: 0.5;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        .choice-btn {
+            background: transparent;
+            border: 1px solid white;
+            border-radius: 0%;
+            color: white;
+            font-size: 16px;
+            padding: 10px;
+        }
+
+        .loader-animation {
+            animation: loading 3.2s;
+            animation-fill-mode: forwards;
+            animation-iteration-count: infinite;
+            animation-timing-function: linear;
+        }
+
+        .default_hidden {
+            visibility: hidden;
+        }
+
+        .player {
+            width: 100%;
+            position: relative;
+            top: 40%;
+        }
+
+        .player::-webkit-media-controls-volume-slider,
+        .player::-webkit-media-controls-mute-button {
+            display: none;
+        }
+
+
+        /* input */
+        input[type=input] {
+            display: block;
+            outline: 0;
+            border-width: 0 0 2px;
+            border-color: rgb(50, 50, 50);
+            height: 36px;
+            width: 60%;
+            background: transparent;
+            font-size: 18px;
+            margin-left: auto;
+            margin-right: auto;
+            color: white;
+        }
+
+        input[type=input]:focus {
+            border-color: white;
+        }
+
+        @keyframes TextFadeIn {
+            0% {
+                opacity: 0;
+                /* filter: blur(4px); */
+            }
+
+            100% {
+                opacity: 1;
+                /* filter: blur(0); */
+            }
+        }
+
+        .story-txt {
+            opacity: 0;
+            color: rgb(234, 83, 90);
+            /* filter: blur(4px); */
+            font-size: 2vh;
+        }
+
+        .story-txt-fadein {
+            animation: TextFadeIn 2s forwards cubic-bezier(.51, -0.01, .34, .69);
+            /* animation: TextFadeIn 2s forwards ease-in; */
+        }
+
+        .msg-txt {
+            opacity: 0;
+            filter: blur(4px);
+            font-size: 3vh;
+        }
+
+        @keyframes TextFade {
+            30% {
+                opacity: 1;
+                filter: blur(0);
+            }
+
+            70% {
+                opacity: 1;
+                filter: blur(0);
+            }
+
+            100% {
+                opacity: 0;
+                filter: blur(0);
+            }
+        }
+
+        @keyframes shake {
+            0% {
+                transform: translate(0, 0);
+            }
+
+            10% {
+                transform: translate(-5px, 0);
+            }
+
+            20% {
+                transform: translate(5px, 0);
+            }
+
+            30% {
+                transform: translate(-5px, 0);
+            }
+
+            40% {
+                transform: translate(5px, 0);
+            }
+
+            50% {
+                transform: translate(-5px, 0);
+            }
+
+            60% {
+                transform: translate(5px, 0);
+            }
+
+            70% {
+                transform: translate(-5px, 0);
+            }
+
+            80% {
+                transform: translate(5px, 0);
+            }
+
+            90% {
+                transform: translate(-5px, 0);
+            }
+
+            100% {
+                transform: translate(0, 0);
+            }
+        }
+
+        .msg-txt-fade {
+            animation: TextFade 6s forwards cubic-bezier(.51, -0.01, .34, .69);
+        }
+
+        .shaking-image {
+            animation: shake 0.5s infinite;
+            /* 0.5s duration, infinite loop */
+        }
+
+        .iterinary {
+            display: none;
+            width: 100%;
+            background-color: #faf0e5;
+            overflow-y: scroll;
+        }
+
+        .iterinary h1 {
+            color: #472c19;
+            font-size: 3.5vh;
+            margin-top: 5vh;
+            font-family: Sniglet-Regular;
+        }
+
+        .iterinary article {
+            display: flex;
+            align-items: center;
+            margin-left: 5vw;
+        }
+
+        .iterinary figure {
+            margin: 0;
+            width: 15vw;
+            height: 15vw;
+        }
+
+        .iterinary figure img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            /* Ensures the image fits well within the figure */
+        }
+
+        .iterinary figcaption {
+            display: none;
+            /* Hide the caption if not needed */
+        }
+
+        .iterinary h2 {
+            font-family: Sniglet-Regular;
+            color: #472c19;
+            font-size: 3vh;
+            margin-left: 10px;
+            /* Space between image and text */
+        }
+    </style>
+</head>
+
+<script>
+    function play_scene_1(next) {
+        scene1 = document.getElementById("scene-1");
+        scene1.style.display = "block";
+        scene1.classList.add("fade-in-mid");
+        video = document.getElementById("scene-1-player");
+        video_cnt = document.getElementById("video-container");
+        video_cnt.style.display = "block";
+        video.addEventListener('ended', function () {
+            video.style.display = "none";
+            video_cnt.style.display = "none";
+            scene_ending = document.getElementById("scene-1-ending");
+            scene_ending.style.display = "flex";
+            scene_ending.classList.add("fade-in");
+            setTimeout(() => {
+                scene_ending.style.opacity = 1;
+                scene_ending.classList.remove("fade-in");
+                replay_btn = document.getElementById("scene-1-replay");
+                continue_btn = document.getElementById("scene-1-continue");
+                replay_btn.onclick = function () {
+                    replay_btn.onclick = null;
+                    continue_btn.onclick = null;
+                    scene_ending.classList.add("fade-out");
+                    setTimeout(() => {
+                        scene_ending.classList.remove("fade-out");
+                        scene_ending.style.opacity = 0;
+                        scene_ending.style.display = "none";
+                        video.classList.remove("fade-out");
+                        video.style.opacity = 0;
+                        video.style.display = "block";
+                        video.classList.add("fade-in");
+                        video_cnt.style.display = "block";
+                    }, 1600);
+                    video.currentTime = 0;
+                }
+                continue_btn.onclick = function () {
+                    continue_btn.onclick = null;
+                    replay_btn.onclick = null;
+                    scene1.classList.add("fade-out-screen");
+                    setTimeout(() => {
+                        scene_ending.style.opacity = 0;
+                        scene_ending.style.display = "none";
+                        scene1.style.display = "none";
+                        video.style.display = "block";
+                        scene1.classList.remove("fade-out-screen");
+                        if (next == "q2") {
+                            q2_ready();
+                        }
+                        else if (next == "q3") {
+                            q3_ready();
+                        }
+                        else if (next == "q4") {
+                            q4_ready();
+                        }
+                        else if (next == "q5") {
+                            q5_ready();
+                        }
+                        else if (next == "q6") {
+                            q6_ready();
+                        }
+                        else if (next == "last_hint") {
+                            last_hint();
+                        }
+                        //chapter3();
+                    }, 1600);
+                }
+            }, 1000);
+
+        });
+    }
+
+    function iterinary_ready() {
+        window.location.hash = '273e';
+        document.body.style.backgroundColor = "#faf0e5";
+        document.getElementById("main-content").style.backgroundColor = "#faf0e5";
+        document.getElementById("iterinary").style.display = "block";
+        document.getElementById("iterinary").classList.add("fade-in-mid");
+        document.body.style.overflow = "auto";
+    }
+
+    function last_question() {
+        window.location.hash = '1985';
+        document.getElementById("q-last").style.display = "block";
+        document.getElementById("q-last").classList.add("fade-in-mid");
+        setTimeout(() => {
+            document.getElementById("q-last-text").classList.add("story-txt-fadein");
+            document.getElementById("q-last-key").classList.add("story-txt-fadein");
+            try_again_txt = document.getElementById("q-last-try-again");
+            document.getElementById("q-last-key").onkeypress = function (e) {
+                if (e.key === 'Enter') {
+                    if (try_again_txt.classList.contains("fade-in")) {
+                        try_again_txt.classList.remove("fade-in");
+                    }
+                    try_again_txt.style.opacity = 0;
+                    var value = document.getElementById("q-last-key").value.toLowerCase().replace(' ', '');
+                    if (value == "poland" || value == "lenkija") {
+                        document.getElementById("q-last-key").onkeypress = null;
+                        document.getElementById("q-last-key").classList.remove("story-txt-fadein");
+                        document.getElementById("q-last-key").classList.add("fade-out");
+                        if (try_again_txt.classList.contains("fade-in")) {
+                            try_again_txt.classList.remove("fade-in");
+                            try_again_txt.classList.add("fade-out");
+                        }
+                        answer_txt = document.getElementById("q-last-answer");
+
+                        setTimeout(() => {
+                            document.getElementById("q-last-key").style.display = "none";
+                            try_again_txt.style.display = "none";
+                            answer_txt.style.display = "block";
+                            document.getElementById("q-last-answer-cont").style.display = "block";
+                            answer_txt.classList.add("fade-in-mid");
+                            document.getElementById("q-last-loader").style.display = "block";
+                            document.getElementById("q-last-loader").classList.add("fade-in-mid");
+                            setTimeout(() => {
+                                document.getElementById("q-last-loader").classList.add("loader-animation");
+                                setTimeout(() => {
+                                    document.getElementById("q-last-loader").classList.remove("loader-animation");
+                                    document.getElementById("q-last-loader").classList.add("fade-in");
+                                    document.getElementById("q-last-loader").innerHTML = "Correct!";
+                                    setTimeout(() => {
+                                        document.getElementById("q-last").classList.add("fade-out-screen");
+                                        setTimeout(() => {
+                                            document.getElementById("q-last").style.display = "none";
+                                            iterinary_ready();
+                                        }, 1600);
+                                    }, 1600);
+                                }, 5000);
+                            }, 1600);
+                        }, 1000);
+                    } else {
+                        try_again_txt.classList.add("fade-in");
+                    }
+                }
+            }
+        }, 1200);
+    }
+
+    function hint_chain() {
+        document.getElementById("lh").style.display = "block";
+        document.getElementById("lh").classList.add("fade-in");
+        bnt_enabled = false;
+        setTimeout(() => {
+            bnt_enabled = true;
+            document.getElementById("lh-desc-1").classList.add("fade-in");
+            setTimeout(() => {
+                document.getElementById("lh-img-1").classList.add("shaking-image");
+            }, 800);
+            setTimeout(() => {
+                document.getElementById("lh-hint-btn").classList.add("fade-in");
+            }, 1800);
+        }, 1500);
+        level = 1;
+        function next_level() {
+            level++;
+            if (level == 2) {
+                document.getElementById("lh-bg").style.backgroundImage = "linear-gradient(rgba(0, 0, 0, 0.97), rgba(0, 0, 0, 0.97)), url('flag.png')";
+                document.getElementById("lh-img-1").classList.remove("shaking-image");
+                document.getElementById("lh-img-1").style.display = "none";
+                document.getElementById("lh-desc-1").style.display = "none";
+                document.getElementById("lh-img-2").style.display = "block";
+                document.getElementById("lh-img-2").classList.add("shaking-image");
+                document.getElementById("lh-hint-btn").innerHTML = "MORE!!";
+                setTimeout(() => {
+                    document.getElementById("lh-hint-btn").classList.add("fade-in");
+                }, 1600);
+                document.getElementById("lh-container").classList.remove("fade-out");
+                document.getElementById("lh-container").classList.add("fade-in");
+            }
+            else if (level == 3) {
+                document.getElementById("lh-bg").style.backgroundImage = "linear-gradient(rgba(0, 0, 0, 0.94), rgba(0, 0, 0, 0.94)), url('flag.png')";
+                document.getElementById("lh-img-2").classList.remove("shaking-image");
+                document.getElementById("lh-img-2").style.display = "none";
+                document.getElementById("lh-desc-3").style.display = "block";
+                document.getElementById("lh-img-3").style.display = "block";
+                setTimeout(() => {
+                    document.getElementById("lh-desc-3").classList.add("fade-in");
+                }, 1000);
+                document.getElementById("lh-hint-btn").innerHTML = "Więcej!";
+                setTimeout(() => {
+                    document.getElementById("lh-hint-btn").classList.add("fade-in");
+                }, 2600);
+                document.getElementById("lh-container").classList.remove("fade-out");
+                document.getElementById("lh-container").classList.add("fade-in");
+            }
+            else if (level == 4) {
+                document.getElementById("lh-bg").style.backgroundImage = "linear-gradient(rgba(0, 0, 0, 0.89), rgba(0, 0, 0, 0.89)), url('flag.png')";
+                document.getElementById("lh-img-3").style.display = "none";
+                document.getElementById("lh-desc-3").style.display = "none";
+                document.getElementById("lh-img-4").style.display = "block";
+                document.getElementById("lh-hint-btn").innerHTML = "Zrozumiałem!";
+                document.getElementById("lh-container").classList.remove("fade-out");
+                document.getElementById("lh-container").classList.add("fade-in");
+                setTimeout(() => {
+                    document.getElementById("lh-hint-btn").classList.add("fade-in");
+                }, 1800);
+                document.getElementById("lh-img-4").classList.add("shaking-image");
+            }
+            else if (level == 5) {
+                document.getElementById("lh-img-4").classList.remove("shaking-image");
+                document.getElementById("lh").style.display = "none";
+                last_question();
+                // document.getElementById("lh").classList.add("fade-out-screen");
+            }
+        }
+
+        document.getElementById("lh-hint-btn").onclick = function () {
+            if (!bnt_enabled) {
+                return;
+            }
+            bnt_enabled = false;
+            setTimeout(() => {
+                bnt_enabled = true;
+            }, 3000);
+            document.getElementById("lh-container").classList.add("fade-out");
+            setTimeout(() => {
+                if (document.getElementById("lh-hint-btn").classList.contains("fade-in")) {
+                    document.getElementById("lh-hint-btn").classList.remove("fade-in");
+                }
+                document.getElementById("lh-hint-btn").style.opacity = 0;
+                next_level();
+            }, 1600);
+
+        }
+    }
+
+    function last_hint() {
+        window.location.hash = 'fe5d';
+        document.getElementById("qh").style.display = "block";
+        document.getElementById("qh").classList.add("fade-in");
+        setTimeout(() => {
+            document.getElementById("qh-text").classList.add("story-txt-fadein");
+        }, 800);
+        setTimeout(() => {
+            document.getElementById("qh-hint-btn").classList.add("fade-in");
+        }, 3000);
+        document.getElementById("qh-hint-btn").onclick = function () {
+            document.getElementById("qh-hint-btn").onclick = null;
+            document.getElementById("qh").classList.add("fade-out-screen");
+            setTimeout(() => {
+                document.getElementById("qh").style.display = "none";
+                hint_chain();
+            }, 1600);
+        }
+    }
+
+    function q6_ready() {
+        window.location.hash = 'c1df';
+        screen_el = document.getElementById("q6");
+        description_txt = document.getElementById("q6-text");
+        key_input = document.getElementById("q6-key");
+        hint_txt = document.getElementById("q6-hint");
+        answer_txt = document.getElementById("q6-answer");
+        try_again_txt = document.getElementById("q6-try-again");
+        loading_txt = document.getElementById("q6-loader");
+        screen_el.style.display = "block";
+        description_txt.classList.add("story-txt-fadein");
+        key_input.classList.add("story-txt-fadein");
+        setTimeout(() => {
+            hint_txt.classList.add("story-txt-fadein");
+        }, 1500);
+
+        key_input.onkeypress = function (e) {
+            if (e.key === 'Enter') {
+                var value = key_input.value.toLowerCase().replace(' ', '');
+                if (value == "zeland" || value == "newzeland" || value == "zelandija" || value == "naujojizelandija") {
+                    key_input.onkeypress = null;
+                    key_input.classList.remove("story-txt-fadein");
+                    key_input.classList.add("fade-out");
+                    hint_txt.classList.remove("story-txt-fadein");
+                    hint_txt.classList.add("fade-out");
+                    if (try_again_txt.classList.contains("fade-in")) {
+                        try_again_txt.classList.remove("fade-in");
+                        try_again_txt.classList.add("fade-out");
+                    }
+
+
+                    setTimeout(() => {
+                        key_input.style.display = "none";
+                        hint_txt.style.display = "none";
+                        try_again_txt.style.display = "none";
+                        answer_txt.style.display = "block";
+                        answer_txt.classList.add("fade-in-mid");
+
+                        loading_txt.style.display = "block";
+                        loading_txt.classList.add("fade-in-mid");
+
+                        setTimeout(() => {
+                            loading_txt.classList.add("loader-animation");
+                            video = document.getElementById("scene-1-player");
+                            video.src = "zel.mp4";
+                            video.load();
+                            video.addEventListener('canplaythrough', function onCanPlayThrough() {
+                                video.removeEventListener('canplaythrough', onCanPlayThrough);  // Remove event listener
+                                loading_txt.classList.remove("loader-animation");
+                                loading_txt.classList.add("fade-in");
+                                setTimeout(() => {
+                                    loading_txt.innerHTML = "Ready";
+                                    setTimeout(() => {
+                                        screen_el.classList.add("fade-out-screen");
+                                        setTimeout(() => {
+                                            screen_el.style.display = "none";
+                                            play_scene_1("last_hint");
+                                        }, 1600);
+                                    }, 1000);
+                                }, 1000);
+                            }, 1000)
+                        }, 1600);
+                    }, 1000);
+                } else {
+                    try_again_txt.classList.add("fade-in");
+                }
+            }
+        }
+    }
+
+    function q5_ready() {
+        window.location.hash = 'ac347';
+        screen_el = document.getElementById("q5");
+        description_txt = document.getElementById("q5-text");
+        key_input = document.getElementById("q5-key");
+        hint_txt = document.getElementById("q5-hint");
+        answer_txt = document.getElementById("q5-answer");
+        try_again_txt = document.getElementById("q5-try-again");
+        loading_txt = document.getElementById("q5-loader");
+        screen_el.style.display = "block";
+        description_txt.classList.add("story-txt-fadein");
+        key_input.classList.add("story-txt-fadein");
+        setTimeout(() => {
+            hint_txt.classList.add("story-txt-fadein");
+        }, 1500);
+
+        key_input.onkeypress = function (e) {
+            if (e.key === 'Enter') {
+                var value = key_input.value.toLowerCase().replace(' ', '');
+                if (value == "usa" || value == "america" || value == "jav" || value == "amerika") {
+                    key_input.onkeypress = null;
+                    key_input.classList.remove("story-txt-fadein");
+                    key_input.classList.add("fade-out");
+                    hint_txt.classList.remove("story-txt-fadein");
+                    hint_txt.classList.add("fade-out");
+                    if (try_again_txt.classList.contains("fade-in")) {
+                        try_again_txt.classList.remove("fade-in");
+                        try_again_txt.classList.add("fade-out");
+                    }
+
+
+                    setTimeout(() => {
+                        key_input.style.display = "none";
+                        hint_txt.style.display = "none";
+                        try_again_txt.style.display = "none";
+                        answer_txt.style.display = "block";
+                        answer_txt.classList.add("fade-in-mid");
+
+                        loading_txt.style.display = "block";
+                        loading_txt.classList.add("fade-in-mid");
+
+                        setTimeout(() => {
+                            loading_txt.classList.add("loader-animation");
+                            video = document.getElementById("scene-1-player");
+                            video.src = "usa.mp4";
+                            video.load();
+                            video.addEventListener('canplaythrough', function onCanPlayThrough() {
+                                video.removeEventListener('canplaythrough', onCanPlayThrough);  // Remove event listener
+                                loading_txt.classList.remove("loader-animation");
+                                loading_txt.classList.add("fade-in");
+                                setTimeout(() => {
+                                    loading_txt.innerHTML = "Ready";
+                                    setTimeout(() => {
+                                        screen_el.classList.add("fade-out-screen");
+                                        setTimeout(() => {
+                                            screen_el.style.display = "none";
+                                            play_scene_1("q6");
+                                        }, 1600);
+                                    }, 1000);
+                                }, 1000);
+                            }, 1000)
+                        }, 1600);
+                    }, 1000);
+                } else {
+                    try_again_txt.classList.add("fade-in");
+                }
+            }
+        }
+    }
+
+    function q4_ready() {
+        window.location.hash = '1b64';
+        screen_el = document.getElementById("q4");
+        description_txt = document.getElementById("q4-text");
+        key_input = document.getElementById("q4-key");
+        hint_txt = document.getElementById("q4-hint");
+        answer_txt = document.getElementById("q4-answer");
+        try_again_txt = document.getElementById("q4-try-again");
+        loading_txt = document.getElementById("q4-loader");
+        screen_el.style.display = "block";
+        description_txt.classList.add("story-txt-fadein");
+        key_input.classList.add("story-txt-fadein");
+        setTimeout(() => {
+            hint_txt.classList.add("story-txt-fadein");
+        }, 1500);
+
+        key_input.onkeypress = function (e) {
+            if (e.key === 'Enter') {
+                var value = key_input.value.toLowerCase().replace(' ', '');
+                if (value == "thailand" || value == "tailandas") {
+                    key_input.onkeypress = null;
+                    key_input.classList.remove("story-txt-fadein");
+                    key_input.classList.add("fade-out");
+                    hint_txt.classList.remove("story-txt-fadein");
+                    hint_txt.classList.add("fade-out");
+                    if (try_again_txt.classList.contains("fade-in")) {
+                        try_again_txt.classList.remove("fade-in");
+                        try_again_txt.classList.add("fade-out");
+                    }
+
+
+                    setTimeout(() => {
+                        key_input.style.display = "none";
+                        hint_txt.style.display = "none";
+                        try_again_txt.style.display = "none";
+                        answer_txt.style.display = "block";
+                        answer_txt.classList.add("fade-in-mid");
+
+                        loading_txt.style.display = "block";
+                        loading_txt.classList.add("fade-in-mid");
+
+                        setTimeout(() => {
+                            loading_txt.classList.add("loader-animation");
+                            video = document.getElementById("scene-1-player");
+                            video.src = "tai.mp4";
+                            video.load();
+                            video.addEventListener('canplaythrough', function onCanPlayThrough() {
+                                video.removeEventListener('canplaythrough', onCanPlayThrough);  // Remove event listener
+                                loading_txt.classList.remove("loader-animation");
+                                loading_txt.classList.add("fade-in");
+                                setTimeout(() => {
+                                    loading_txt.innerHTML = "Ready";
+                                    setTimeout(() => {
+                                        screen_el.classList.add("fade-out-screen");
+                                        setTimeout(() => {
+                                            screen_el.style.display = "none";
+                                            play_scene_1("q5");
+                                        }, 1600);
+                                    }, 1000);
+                                }, 1000);
+                            }, 1000)
+                        }, 1600);
+                    }, 1000);
+                } else {
+                    try_again_txt.classList.add("fade-in");
+                }
+            }
+        }
+    }
+
+    function q3_ready() {
+        window.location.hash = '77de';
+        screen_el = document.getElementById("q3");
+        description_txt = document.getElementById("q3-text");
+        key_input = document.getElementById("q3-key");
+        hint_txt = document.getElementById("q3-hint");
+        answer_txt = document.getElementById("q3-answer");
+        try_again_txt = document.getElementById("q3-try-again");
+        loading_txt = document.getElementById("q3-loader");
+        screen_el.style.display = "block";
+        description_txt.classList.add("story-txt-fadein");
+        key_input.classList.add("story-txt-fadein");
+        setTimeout(() => {
+            hint_txt.classList.add("story-txt-fadein");
+        }, 1500);
+
+        key_input.onkeypress = function (e) {
+            if (e.key === 'Enter') {
+                var value = key_input.value.toLowerCase().replace(' ', '');
+                if (value == "japan" || value == "japonija") {
+                    key_input.onkeypress = null;
+                    key_input.classList.remove("story-txt-fadein");
+                    key_input.classList.add("fade-out");
+                    hint_txt.classList.remove("story-txt-fadein");
+                    hint_txt.classList.add("fade-out");
+                    if (try_again_txt.classList.contains("fade-in")) {
+                        try_again_txt.classList.remove("fade-in");
+                        try_again_txt.classList.add("fade-out");
+                    }
+
+
+                    setTimeout(() => {
+                        key_input.style.display = "none";
+                        hint_txt.style.display = "none";
+                        try_again_txt.style.display = "none";
+                        answer_txt.style.display = "block";
+                        answer_txt.classList.add("fade-in-mid");
+
+                        loading_txt.style.display = "block";
+                        loading_txt.classList.add("fade-in-mid");
+
+                        setTimeout(() => {
+                            loading_txt.classList.add("loader-animation");
+                            video = document.getElementById("scene-1-player");
+                            video.src = "jap.mp4";
+                            video.load();
+                            video.addEventListener('canplaythrough', function onCanPlayThrough() {
+                                video.removeEventListener('canplaythrough', onCanPlayThrough);  // Remove event listener
+                                loading_txt.classList.remove("loader-animation");
+                                loading_txt.classList.add("fade-in");
+                                setTimeout(() => {
+                                    loading_txt.innerHTML = "Ready";
+                                    setTimeout(() => {
+                                        screen_el.classList.add("fade-out-screen");
+                                        setTimeout(() => {
+                                            screen_el.style.display = "none";
+                                            play_scene_1("q4");
+                                        }, 1600);
+                                    }, 1000);
+                                }, 1000);
+                            }, 1000)
+                        }, 1600);
+                    }, 1000);
+                } else {
+                    try_again_txt.classList.add("fade-in");
+                }
+            }
+        }
+    }
+
+    function q2_ready() {
+        window.location.hash = 'da4b';
+        screen_el = document.getElementById("q2");
+        description_txt = document.getElementById("q2-text");
+        key_input = document.getElementById("q2-key");
+        hint_txt = document.getElementById("q2-hint");
+        answer_txt = document.getElementById("q2-answer");
+        try_again_txt = document.getElementById("q2-try-again");
+        loading_txt = document.getElementById("q2-loader");
+        screen_el.style.display = "block";
+        description_txt.classList.add("story-txt-fadein");
+        key_input.classList.add("story-txt-fadein");
+        setTimeout(() => {
+            hint_txt.classList.add("story-txt-fadein");
+        }, 1500);
+
+        key_input.onkeypress = function (e) {
+            if (e.key === 'Enter') {
+                var value = key_input.value.toLowerCase().replace(' ', '');
+                if (value == "germany" || value == "vokietija") {
+                    key_input.onkeypress = null;
+                    key_input.classList.remove("story-txt-fadein");
+                    key_input.classList.add("fade-out");
+                    hint_txt.classList.remove("story-txt-fadein");
+                    hint_txt.classList.add("fade-out");
+                    if (try_again_txt.classList.contains("fade-in")) {
+                        try_again_txt.classList.remove("fade-in");
+                        try_again_txt.classList.add("fade-out");
+                    }
+
+
+                    setTimeout(() => {
+                        key_input.style.display = "none";
+                        hint_txt.style.display = "none";
+                        try_again_txt.style.display = "none";
+                        answer_txt.style.display = "block";
+                        answer_txt.classList.add("fade-in-mid");
+
+                        loading_txt.style.display = "block";
+                        loading_txt.classList.add("fade-in-mid");
+
+                        setTimeout(() => {
+                            loading_txt.classList.add("loader-animation");
+                            video = document.getElementById("scene-1-player");
+                            video.src = "ger.mp4";
+                            video.load();
+                            video.addEventListener('canplaythrough', function onCanPlayThrough() {
+                                video.removeEventListener('canplaythrough', onCanPlayThrough);  // Remove event listener
+                                loading_txt.classList.remove("loader-animation");
+                                loading_txt.classList.add("fade-in");
+                                setTimeout(() => {
+                                    loading_txt.innerHTML = "Ready";
+                                    setTimeout(() => {
+                                        screen_el.classList.add("fade-out-screen");
+                                        setTimeout(() => {
+                                            screen_el.style.display = "none";
+                                            play_scene_1("q3");
+                                        }, 1600);
+                                    }, 1000);
+                                }, 1000);
+                            }, 1000)
+                        }, 1600);
+                    }, 1000);
+                } else {
+                    try_again_txt.classList.add("fade-in");
+                }
+            }
+        }
+    }
+
+
+
+    function q1_ready() {
+        window.location.hash = '356a';
+        document.getElementById("q1").style.display = "flex";
+        document.getElementById("q1-text").classList.add("story-txt-fadein");
+        document.getElementById("q1-key").classList.add("story-txt-fadein");
+        setTimeout(() => {
+            document.getElementById("q1-hint").classList.add("story-txt-fadein");
+        }, 1500);
+        try_again_txt = document.getElementById("q1-try-again");
+        document.getElementById("q1-key").onkeypress = function (e) {
+            if (e.key === 'Enter') {
+                var value = document.getElementById("q1-key").value.toLowerCase().replace(' ', '');
+                if (value == "uk" || value == "unitedkingdom" || value == "england" || value == "greatbritain" || value == "jungtinekaralyste" || value == "anglija" || value == "didziojibritanija") {
+                    document.getElementById("q1-key").onkeypress = null;
+                    document.getElementById("q1-key").classList.remove("story-txt-fadein");
+                    document.getElementById("q1-key").classList.add("fade-out");
+                    document.getElementById("q1-hint").classList.remove("story-txt-fadein");
+                    document.getElementById("q1-hint").classList.add("fade-out");
+                    if (try_again_txt.classList.contains("fade-in")) {
+                        try_again_txt.classList.remove("fade-in");
+                        try_again_txt.classList.add("fade-out");
+                    }
+                    answer_txt = document.getElementById("q1-answer");
+
+                    setTimeout(() => {
+                        document.getElementById("q1-key").style.display = "none";
+                        document.getElementById("q1-hint").style.display = "none";
+                        try_again_txt.style.display = "none";
+                        answer_txt.style.display = "block";
+                        answer_txt.classList.add("fade-in-mid");
+                        loading_txt = document.getElementById("q1-loader");
+                        loading_txt.style.display = "block";
+                        loading_txt.classList.add("fade-in-mid");
+
+                        setTimeout(() => {
+                            document.getElementById("q1-loader").classList.add("loader-animation");
+                            video = document.getElementById("scene-1-player");
+                            video.src = "uk.mp4";
+                            video.load();
+                            video.addEventListener('canplaythrough', function onCanPlayThrough() {
+                                video.removeEventListener('canplaythrough', onCanPlayThrough);  // Remove event listener
+                                loading_txt.classList.remove("loader-animation");
+                                loading_txt.classList.add("fade-in");
+                                setTimeout(() => {
+                                    loading_txt.innerHTML = "Ready";
+                                    setTimeout(() => {
+                                        document.getElementById("q1").classList.add("fade-out-screen");
+                                        setTimeout(() => {
+                                            document.getElementById("q1").style.display = "none";
+                                            play_scene_1("q2");
+                                        }, 1600);
+                                    }, 1000);
+                                }, 1000);
+                            }, 1000)
+                        }, 1600);
+                    }, 1000);
+                } else {
+                    try_again_txt.classList.add("fade-in");
+                }
+            }
+        }
+    }
+
+    function splash_ready() {
+        document.getElementById("splash").style.display = "block";
+        document.getElementById("splash").classList.add("fade-in");
+        btn_splash = document.getElementById("btn-splash");
+        btn_splash.classList.add("story-txt-fadein");
+        btn_splash.onclick = function start(params) {
+            params.currentTarget.onclick = null;
+            document.getElementById("splash").classList.add("fade-out-screen");
+            setTimeout(() => {
+                document.getElementById("splash").style.display = "none";
+                q1_ready();
+            }, 1600);
+        }
+    }
+
+
+    window.onload = function () {
+        // document.ontouchmove = function (e) {
+        //     e.preventDefault();
+        // }
+        if (window.location.hash) {
+            var hash = window.location.hash.substring(1);
+            if (hash === '356a') {
+                q1_ready();
+            }
+            else if (hash === 'da4b') {
+                q2_ready();
+            }
+            else if (hash === '77de') {
+                q3_ready();
+            }
+            else if (hash === '1b64') {
+                q4_ready();
+            }
+            else if (hash === 'ac347') {
+                q5_ready();
+            }
+            else if (hash === 'c1df') {
+                q6_ready();
+            }
+            else if (hash === '273e') {
+                iterinary_ready();
+            }
+            else if (hash === '902b') {
+                chapter7();
+            }
+            else if (hash === 'fe5d') {
+                last_hint();
+            }
+            else if (hash === '1985') {
+                last_question();
+            }
+            else {
+                splash_ready();
+            }
+        }
+        else {
+            splash_ready();
+        }
+
+        //splash_ready();
+    };
+
+</script>
+<div id="main-content" class="content" style="background:black;">
+    <div id="splash" class="screen" style="background:rgb(250, 240, 229); display: none; opacity: 0;">
+        <div style="width: 60%;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        padding-top: 40%;">
+            <img src="birthday.gif" style="width: 100%;"></img>
+
+        </div>
+        <h1 id="btn-splash"
+            style="color:rgb(234, 83, 90); text-align: center; font-size: 4vh; font-weight: bold; font-family: Sniglet; opacity: 0;">
+            Open</h1>
+    </div>
+    <div id="q1" class="screen">
+        <div class="img-container">
+            <img id="q1-hal-img" src="hal.png"></img>
+        </div>
+        <div id="q1-text" class="story-txt-container">
+            <h1>Hello</h1>
+            <p class="main-txt">I am super AI who will help you.<br />
+                Write down a SPA destination.
+            </p>
+        </div>
+        <input id="q1-key" class="answer-input" type="input" required />
+        <div id="q1-try-again" class="try-again-container">
+            <p>Try again</p>
+        </div>
+        <p class="hint" id="q1-hint">Hint:<br />
+            Maybe a country that you are very familiar with?
+        </p>
+        <div class="answer-container">
+            <p style="top: 5%;" id="q1-answer">United Kindgdom</p>
+            <p style="top: 6%;" id="q1-loader">Thinking...</p>
+        </div>
+    </div>
+    <div id="scene-1" class="screen" style="display: none;">
+        <div id="video-container" style="height: 100%;">
+            <video id="scene-1-player" class="player" controls>
+                <source src="" type="video/mp4" />
+            </video>
+        </div>
+        <div id="scene-1-ending"
+            style="display: none; opacity: 0; height: 100%; flex-direction: column; align-items: center; justify-content: center;">
+            <p>Choose</p>
+            <button class="choice-btn" id="scene-1-replay">Replay</button>
+            <p>Or</p>
+            <button class="choice-btn" id="scene-1-continue">Continue</button>
+        </div>
+    </div>
+    <div id="q2" class="screen">
+        <div class="img-container">
+            <img id="q2-hal-img" src="hal.png"></img>
+        </div>
+        <div id="q2-text" class="story-txt-container">
+            <p>Let's try something different then.<br />
+                Write down a SPA destination.
+            </p>
+        </div>
+        <input id="q2-key" class="answer-input" type="input" required />
+        <div id="q2-try-again" class="try-again-container">
+            <p>Try again</p>
+        </div>
+        <p class="hint" id="q2-hint">Hint:<br />
+            Maybe a big country in Europe you've been last year?
+        </p>
+        <div class="answer-container">
+            <p style="top: 5%;" id="q2-answer">Germany</p>
+            <p style="top: 6%;" id="q2-loader">Thinking...</p>
+        </div>
+    </div>
+    <div id="q3" class="screen">
+        <div class="img-container">
+            <img id="q3-hal-img" src="hal.png"></img>
+        </div>
+        <div id="q3-text" class="story-txt-container">
+            <p>Okay where would you really want to go?<br />
+                Write down a SPA destination.
+            </p>
+        </div>
+        <input id="q3-key" class="answer-input" type="input" required />
+        <div id="q3-try-again" class="try-again-container">
+            <p>Try again</p>
+        </div>
+        <p class="hint" id="q3-hint">Hint:<br />
+            Big plans
+        </p>
+        <div class="answer-container">
+            <p style="top: 5%;" id="q3-answer">Japan</p>
+            <p style="top: 6%;" id="q3-loader">Thinking...</p>
+        </div>
+    </div>
+    <div id="q4" class="screen">
+        <div class="img-container">
+            <img id="q4-hal-img" src="hal.png"></img>
+        </div>
+        <div id="q4-text" class="story-txt-container">
+            <p>Something exotic then?<br />
+                Write down a SPA destination.
+            </p>
+        </div>
+        <input id="q4-key" class="answer-input" type="input" required />
+        <div id="q4-try-again" class="try-again-container">
+            <p>Try again</p>
+        </div>
+        <p class="hint" id="q4-hint">Hint:<br />
+            Still Asia but worse
+        </p>
+        <div class="answer-container">
+            <p style="top: 5%;" id="q4-answer">Thailand</p>
+            <p style="top: 6%;" id="q4-loader">Thinking...</p>
+        </div>
+    </div>
+    <div id="q5" class="screen">
+        <div class="img-container">
+            <img id="q5-hal-img" src="hal.png"></img>
+        </div>
+        <div id="q5-text" class="story-txt-container">
+            <p>How about something where you want to go but never were?<br />
+                Write down a SPA destination.
+            </p>
+        </div>
+        <input id="q5-key" class="answer-input" type="input" required />
+        <div id="q5-try-again" class="try-again-container">
+            <p>Try again</p>
+        </div>
+        <p class="hint" id="q5-hint">Hint:<br />
+            Big plans, HUGE plans
+        </p>
+        <div class="answer-container">
+            <p style="top: 5%;" id="q5-answer">USA</p>
+            <p style="top: 6%;" id="q5-loader">Thinking...</p>
+        </div>
+    </div>
+    <div id="q6" class="screen">
+        <div class="img-container">
+            <img id="q6-hal-img" src="hal.png"></img>
+        </div>
+        <div id="q6-text" class="story-txt-container">
+            <p>How about an unexpected journey?<br />
+                Write down a SPA destination.
+            </p>
+        </div>
+        <input id="q6-key" class="answer-input" type="input" required />
+        <div id="q6-try-again" class="try-again-container">
+            <p>Try again</p>
+        </div>
+        <p class="hint" id="q6-hint">Hint:<br />
+            Australia's smaller neighbour, beutiful but boring
+        </p>
+        <div class="answer-container">
+            <p style="top: 5%;" id="q6-answer">New Zeland</p>
+            <p style="top: 6%;" id="q6-loader">Thinking...</p>
+        </div>
+    </div>
+    <div id="qh" class="screen">
+        <div class="img-container">
+            <img id="qh-hal-img" src="hal.png"></img>
+        </div>
+        <div id="qh-text" class="story-txt" style="position: relative;top: 8%;">
+            <p class="main-txt">
+                I am here to help you.<br />
+                So I will give you a hint.
+            <p>
+                <button class="choice-btn" style="opacity: 0;" id="qh-hint-btn">Reveal</button>
+        </div>
+    </div>
+    <div id="lh" class="screen">
+        <div id="lh-bg"
+            style="background-image: linear-gradient(rgba(0, 0, 0, 0.99), rgba(0, 0, 0, 0.99)), url('flag.png'); width: 100%; height: 100%; background-size: cover; background-position: center; background-repeat: no-repeat;">
+            <div id="lh-container"
+                style="display: flex; width: 100%; height: 80%; flex-direction: column; justify-content: center; align-items: center;">
+                <img id="lh-img-1" src="medallion.webp"
+                    style="width: 50%;display: block;margin-left: auto;margin-right: auto;position: relative;"></img>
+                <p id="lh-desc-1" style="opacity: 0;">Witcher medallion is active!</p>
+                <img id="lh-img-2" src="food.jpg"
+                    style="display: none; width: 50%;margin-left: auto;margin-right: auto;position: relative;"></img>
+                <img id="lh-img-3" src="lord.webp"
+                    style="display: none; width: 50%;margin-left: auto;margin-right: auto;position: relative;"></img>
+                <p id="lh-desc-3" style="display: none; opacity: 0;">Panie Kot!</p>
+                <img id="lh-img-4" src="biobr.webp"
+                    style="display: none; width: 50%;margin-left: auto;margin-right: auto;position: relative;"></img>
+                <button class="choice-btn" style="opacity: 0;width: 50%; margin-top: 8%;"
+                    id="lh-hint-btn">More!</button>
+            </div>
+        </div>
+    </div>
+    <div id="q-last" class="screen">
+        <div class="img-container">
+            <img id="q-last-hal-img" src="hal_mod.png"></img>
+        </div>
+        <div id="q-last-text" class="story-txt-container">
+            <h1>Hello</h1>
+            <p>I am super AI who will help you.<br />
+                Write down a SPA destination.
+            </p>
+        </div>
+        <input id="q-last-key" class="answer-input" type="input" required />
+        <div id="q-last-try-again" class="try-again-container">
+            <p>I'm afraid I can't do that</p>
+        </div>
+        <div id="q-last-answer-cont" class="answer-container">
+            <p style="top: 5%;" id="q-last-answer" class="">Poland</p>
+            <p style="top: 6%;" id="q-last-loader">Thinking...</p>
+        </div>
+    </div>
+    <div id="iterinary" class="iterinary" style="-webkit-overflow-scrolling: touch;">
+        <h1>Poland Iterinary</h1>
+        <article>
+            <figure>
+                <img src="car_adv.png" alt="Roadtrip">
+            </figure>
+            <h2>Rugsėjo 8: kelionės diena</h2>
+        </article>
+        <table style="margin-left: 5vw; border-spacing: 2vw; font-size: 2.1vh; color: #472c19; font-family: Sniglet-Regular;">
+            <tr>
+                <td>&#x2022; 8:00</td>
+                <td>Išvažiuojam</td>
+                <td><img style="width: 10vw; margin-left: 2vw;" src="alarm_adv.gif" alt="alarm"></td>
+            </tr>
+            <tr>
+                <td>&#x2022; 9:30 - 10:00</td>
+                <td>Keliaujam iš Euferos</td>
+                <td><img style="width: 10vw; margin-left: 2vw;" src="dog_adv.png" alt="sleep"></td>
+            </tr>
+            <tr>
+                <td>&#x2022; 10:00 - 11:30</td>
+                <td>Klausomes ktn'o playlist'o</td>
+                <td><img style="width: 10vw; margin-left: 2vw;" src="music_adv.png" alt="music"></td>
+            </tr>
+        </table>
+        <img src="trip_adv.jpg" alt="Roadtrip" style="width: 90%; margin-left: 5%; margin-right: 5%;">
+        <div style="width: 100%; text-align: center;">Nepetraukiama kelionė - 7h</div>
+        <table style="margin-left: 5vw; border-spacing: 2vw; font-size: 2.1vh; color: #472c19; font-family: Sniglet-Regular;">
+            <tr>
+                <td>&#x2022; 11:30 - 12:00</td>
+                <td>Snacks (iš namų)</td>
+                <td><img style="width: 10vw; margin-left: 2vw;" src="snacks_adv.gif" alt="alarm"></td>
+            </tr>
+            <tr>
+                <td>&#x2022; 12:00 - 14:00</td>
+                <td>Tęsiam chill kelionę</td>
+                <td><img style="width: 10vw; margin-left: 2vw;" src="sleep_adv.webp" alt="sleep"></td>
+            </tr>
+            <tr>
+                <td>&#x2022; ~14:00 - 14:40</td>
+                <td>Sustojam pavalgyti</td>
+                <td><img style="width: 10vw; margin-left: 2vw;" src="eat_road_adv.gif" alt="sleep"></td>
+            </tr>
+        </table>
+        <img src="food_mc_adv.jpg" alt="Roadtrip" style="width: 90%; margin-left: 5%; margin-right: 5%;">
+        <div style="width: 100%; text-align: center;">Praktiškai Michelin</div>
+        <table style="margin-left: 5vw; border-spacing: 2vw; font-size: 2.1vh; color: #472c19; font-family: Sniglet-Regular;">
+            <tr>
+                <td>&#x2022; ~15:00 - 16:30</td>
+                <td>Tęsiam chill kelionę</td>
+                <td><img style="width: 10vw; margin-left: 2vw;" src="ride_adv.gif" alt="alarm"></td>
+            </tr>
+            <tr>
+                <td>&#x2022; ~16:30</td>
+                <td>Check-in</td>
+                <td><img style="width: 10vw; margin-left: 2vw;" src="check_in_adv.gif" alt="sleep"></td>
+            </tr>
+        </table>
+        <img src="hotel.png" alt="Roadtrip" style="width: 90%; margin-left: 5%; margin-right: 5%;">
+        <div style="width: 100%; text-align: center;">Relais & Châteaux Hotel Quadrille - Adults Only</div>
+        <img src="spa_adv.jpg" alt="Spa" style="width: 90%; margin-left: 5%; margin-right: 5%;">
+        <div style="width: 100%; text-align: center;">ktn SPA</div>
+        <img src="room.jpg" alt="Spa" style="width: 90%; margin-left: 5%; margin-right: 5%;">
+        <div style="width: 100%; text-align: center;">Double Apartment with Terrace - Oficyna building</div>
+        <article style="padding-top: 6vw; padding-bottom: 6vw;">
+            <figure>
+                <img src="spa_day.gif" alt="SPA">
+            </figure>
+            <h2>Rugsėjo 9: spa diena</h2>
+        </article>
+        <img src="breakfast.jpg" alt="Roadtrip" style="width: 90%; margin-left: 5%; margin-right: 5%;">
+        <div style="width: 100%; text-align: center;">Skaniai pusryčiaujam (9.1)</div>
+        <table style="margin-left: 5vw; border-spacing: 2vw; font-size: 2.1vh; color: #472c19; font-family: Sniglet-Regular;">
+            <tr>
+                <td>&#x2022; ~11:00-13:30</td>
+                <td>Sėdim SPA</td>
+                <td><img style="width: 10vw; margin-left: 2vw;" src="spa_2_adv.gif" alt="alarm"></td>
+            </tr>
+            <tr>
+                <td>&#x2022; ~14:00</td>
+                <td>Keliaujam į Gdynios senamiestį</td>
+                <td><img style="width: 10vw; margin-left: 2vw;" src="ride_adv.gif" alt="alarm"></td>
+            </tr>
+            <tr>
+                <td>&#x2022; ~14:15</td>
+                <td>Explorinam uostą ir parkus</td>
+                <td><img style="width: 10vw; margin-left: 2vw;" src="harbor_adv.gif" alt="sleep"></td>
+            </tr>
+            <tr>
+                <td>&#x2022; 15:30</td>
+                <td>Pavalgom kavinėj</td>
+                <td><img style="width: 10vw; margin-left: 2vw;" src="coffe_adv.gif" alt="sleep"></td>
+            </tr>
+            <tr>
+                <td>&#x2022; 16:00</td>
+                <td>Einam prie jūros*</td>
+                <td><img style="width: 10vw; margin-left: 2vw;" src="sea_adv.gif" alt="sleep"></td>
+            </tr>
+            <tr>
+                <td>&#x2022; ~19:00</td>
+                <td>Grįžtam į SPA</td>
+                <td><img style="width: 10vw; margin-left: 2vw;" src="spa_2_adv.gif" alt="sleep"></td>
+            </tr>
+            <tr>
+                <td>&#x2022; ~00:00</td>
+                <td>Miegučio</td>
+                <td><img style="width: 10vw; margin-left: 2vw;" src="sleep_2_adv.gif" alt="sleep"></td>
+            </tr>
+        </table>
+        <article style="padding-top: 6vw; padding-bottom: 6vw;">
+            <figure>
+                <img src="explore_2_adv.gif" alt="Explore">
+            </figure>
+            <h2>Rugsėjo 10: exploration diena</h2>
+        </article>
+        <table style="margin-left: 5vw; border-spacing: 2vw; font-size: 2.1vh; color: #472c19; font-family: Sniglet-Regular;">
+            <tr>
+                <td>&#x2022; 07:30 - 8:00</td>
+                <td>Ankstyvi pusryčiai</td>
+                <td><img style="width: 10vw; margin-left: 2vw;" src="breakfast_adv.gif" alt="alarm"></td>
+            </tr>
+            <tr>
+                <td>&#x2022; 8:00 - 8:30</td>
+                <td>Susikraunam daiktus</td>
+                <td><div style="width: 12vw; height: 12vw; overflow: hidden;"><img style="width: 14vw;" src="packing_adv.gif" alt="alarm"></div></td>
+            </tr>
+            <tr>
+                <td>&#x2022; 9:00 - 10:30</td>
+                <td>Dar SPA</td>
+                <td><img style="width: 10vw; margin-left: 2vw;" src="spa_2_adv.gif" alt="sleep"></td>
+            </tr>
+            <tr>
+                <td>&#x2022; 11:00</td>
+                <td>Keliaujam į Gdanską</td>
+                <td><img style="width: 10vw; margin-left: 2vw;" src="ride_adv.gif" alt="sleep"></td>
+            </tr>
+            <tr>
+                <td>&#x2022; 11:30</td>
+                <td>Explorinam Gdanską</td>
+                <td><img style="width: 14vw;" src="explore_adv.gif" alt="sleep"></td>
+            </tr>
+            <tr>
+                <td>&#x2022; 13:00</td>
+                <td>Einam pietaut</td>
+                <td><img style="width: 10vw; margin-left: 2vw;" src="eat_2_adv.gif" alt="sleep"></td>
+            </tr>
+            <tr>
+                <td>&#x2022; 15:00</td>
+                <td>Check in</td>
+                <td><img style="width: 10vw; margin-left: 2vw;" src="check_in_adv.gif" alt="sleep"></td>
+            </tr>
+        </table>
+        <img src="hotel_2.png" alt="Roadtrip" style="width: 90%; margin-left: 5%; margin-right: 5%;">
+        <table style="margin-left: 5vw; border-spacing: 2vw; font-size: 2.1vh; color: #472c19; font-family: Sniglet-Regular;">
+            <tr>
+                <td>&#x2022; 16:00</td>
+                <td>Einam prie jūros*</td>
+                <td><img style="width: 10vw; margin-left: 2vw;" src="sea_adv.gif" alt="sleep"></td>
+            </tr>
+            <tr>
+                <td>&#x2022; 19:00</td>
+                <td>Vakarieniaujam</td>
+                <td><img style="width: 10vw; margin-left: 2vw;" src="eat_3.gif" alt="sleep"></td>
+            </tr>
+            <tr>
+                <td>&#x2022; ~00:00</td>
+                <td>Miegučio</td>
+                <td><img style="width: 10vw; margin-left: 2vw;" src="sleep_2_adv.gif" alt="sleep"></td>
+            </tr>
+        </table>
+        <article style="padding-top: 6vw; padding-bottom: 6vw;">
+            <figure style="width: 17vw; height: 24vw;">
+                <img src="castle_adv.gif" alt="Castle">
+            </figure>
+            <h2>Rugsėjo 11: istorijos diena</h2>
+        </article>
+        <table style="margin-left: 5vw; border-spacing: 2vw; font-size: 2.1vh; color: #472c19; font-family: Sniglet-Regular;">
+            <tr>
+                <td>&#x2022; 9:00</td>
+                <td>Keliames</td>
+                <td><img style="width: 10vw; margin-left: 2vw;" src="alarm_adv.gif" alt="alarm"></td>
+            </tr>
+            <tr>
+                <td>&#x2022; 9:30</td>
+                <td>Checkout</td>
+                <td><div style="width: 12vw; height: 12vw; overflow: hidden;"><img style="width: 14vw;" src="packing_adv.gif" alt="alarm"></div></td>
+            </tr>
+            <tr>
+                <td>&#x2022; 10:00 - 11:00</td>
+                <td>Pusryčiai kavinėje</td>
+                <td><img style="width: 10vw; margin-left: 2vw;" src="eat_4_adv.gif" alt="alarm"></td>
+            </tr>
+            <tr>
+                <td>&#x2022; 11:00 - 12:00</td>
+                <td>Keliaujam į pilį</td>
+                <td><img style="width: 10vw; margin-left: 2vw;" src="ride_adv.gif" alt="alarm"></td>
+            </tr>
+        </table>
+        <img src="castle.jpg" alt="Roadtrip" style="width: 90%; margin-left: 5%; margin-right: 5%;">
+        <table style="margin-left: 5vw; border-spacing: 2vw; font-size: 2.1vh; color: #472c19; font-family: Sniglet-Regular;">
+            <tr>
+                <td>&#x2022; 12:00 - 15:30</td>
+                <td>Explorinam pilį</td>
+                <td><img style="width: 10vw; margin-left: 2vw;" src="castle_2_adv.gif" alt="alarm"></td>
+            </tr>
+            <tr>
+                <td>&#x2022; 15:30</td>
+                <td>Keliaujam namo</td>
+                <td><img style="width: 10vw; margin-left: 2vw;" src="ride_adv.gif" alt="alarm"></td>
+            </tr>
+            <tr>
+                <td>&#x2022; 16:30</td>
+                <td>Gerai pavalgom</td>
+                <td><img style="width: 10vw; margin-left: 2vw;" src="eat_road_adv.gif" alt="alarm"></td>
+            </tr>
+            <tr>
+                <td>&#x2022; iki 23:00</td>
+                <td>Chill iki namų</td>
+                <td><img style="width: 10vw; margin-left: 2vw;" src="music_adv.png" alt="alarm"></td>
+            </tr>
+        </table>
+        <div style="width: 100%; border-top: 1px #472c19 solid; margin-left: 2vw; margin-right: 2vw; font-family: Sniglet-Regular; color: #472c19;">
+            *Priklauso nuo oro sąlygų ir noro
+        </div>
+        <!-- <ul>
+            <li style="display: flex;"><div style="display: flex; flex-direction: column; justify-content: center;">8:00 Išvažiuojam</div><img style="width: 10vw; margin-left: 2vw;" src="alarm_adv.gif" alt="alarm"></li>
+            Double Apartment with Terrace - Oficyna building
+        </ul> -->
+    </div>
+</div>
+
+<!-- <h1>Hello</h1> -->
