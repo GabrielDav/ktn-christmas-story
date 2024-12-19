@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kitty bucks</title>
+    <script src="https://cdn.plot.ly/plotly-2.26.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dayjs/dayjs.min.js"></script>
+    <style>
+        body {
+            background-color: #121212; /* Dark gray background */
+            color: #ffffff; /* White text */
+        }
+        h1 {
+            font-family: 'Helvetica', 'Arial', sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <h1>Kitty Bucks</h1>
+    <div id="counter" style="font-size: 3em; margin-top: 10vh;"><span>$</span><span id="counter-val">0</span></div>
+    <div id="plot" style="width: 100%; height: 40vh; margin-top: 20vh;"></div>
+
+    <script>
+        const currentValue = 600;
+        const currentDate = dayjs();
+        const formattedDate = currentDate.format('YYYY-MM-DD');
+        var trace_dates = ['2024-10-16', '2024-11-19'];
+        var trace_values = [300, 600];
+        trace_values.push(trace_values[trace_values.length - 1]);
+        trace_dates.push(formattedDate);
+        // Trace for the area chart
+        const trace1 = {
+            x: trace_dates, // Non-continuous dates
+            y: trace_values, // Y values
+            mode: 'lines', // Line mode
+            fill: 'tozeroy', // Fill area to zero on Y-axis
+            line: { width: 3, color: '#03dac6' }, // Line color and width
+            fillcolor: 'rgba(0, 204, 255, 0.2)', // Transparent blue fill color
+            hoverinfo: 'skip' // Disable hover tooltips
+        };
+
+        // Trace for the last marker (highlighted point)
+        const trace2 = {
+            x: [trace_dates[trace_dates.length-1]], // Last date
+            y: [trace_values[trace_values.length-1]], // Last Y value
+            mode: 'markers', // Marker only
+            marker: { size: 16, color: '#bb86fc' }, // Large pink dot
+            hoverinfo: 'skip' // Disable hover tooltips for this trace
+        };
+
+        const data = [trace1, trace2];
+
+        const layout = {
+            title: {
+                font: { family: 'Courier New, monospace', size: 24, color: '#ffffff' }
+            },
+            xaxis: {
+                tickangle: -45,
+                gridcolor: '#444444', // Dark grid lines
+                zerolinecolor: '#555555',
+                color: '#fafafa',
+                fill: 'tozeroy',
+                fillcolor: 'rgba(0, 204, 255, 0.2)'
+            },
+            yaxis: {
+                range: [0, 1000],
+                autorange: true,
+                gridcolor: '#444444',
+                zerolinecolor: '#555555',
+                color: '#fafafa'
+            },
+            margin: {
+                l: 40,
+                r: 10,
+                b: 50,
+                t: 0,
+                pad: 4
+            },
+            plot_bgcolor: '#000000', // Black background for plot area
+            paper_bgcolor: '#121212', // Dark gray background outside plot area
+            showlegend: false, // Disable legend
+        };
+
+        Plotly.newPlot('plot', data, layout, { displayModeBar: false, staticPlot: true });
+
+        let counts = setInterval(updated, 10);
+        let upto = 0;
+        var count = document.getElementById("counter-val");
+
+        function updated() {
+        // ++upto would never hit 88.5, it will hit 88.1 89.1 -> so we do += 0.1
+        // Updated: Show only one decimal using toFixed()
+            const _t = upto += 5;
+            count.innerHTML = _t;
+            // Changing upto to number again because toFixed converts it to string
+            if (Number(upto) === currentValue) {
+                clearInterval(counts);
+            }
+        }
+    </script>
+</body>
+</html>
