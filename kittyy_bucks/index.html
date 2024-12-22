@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,19 +8,144 @@
     <script src="https://cdn.plot.ly/plotly-2.26.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/dayjs/dayjs.min.js"></script>
     <style>
-        body {
-            background-color: #121212; /* Dark gray background */
-            color: #ffffff; /* White text */
+        @font-face {
+            font-family: "Sniglet-Regular";
+            src: url(Sniglet-Regular.ttf) format("truetype");
         }
+
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+            }
+
+            100% {
+                opacity: 1;
+            }
+
+        }
+
+        .fadeIn {
+            animation-name: fadeIn;
+            animation-duration: 0.8s;
+            animation-fill-mode: forwards;
+        }
+
+        @keyframes fadeOut {
+            0% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0;
+            }
+
+        }
+
+        .fadeOut {
+            animation-name: fadeOut;
+            animation-duration: 0.4s;
+            animation-fill-mode: forwards;
+        }
+
+        body {
+            background-color: #121212;
+            /* Dark gray background */
+            color: #ffffff;
+            /* White text */
+            font-family: Sniglet-Regular;
+            width: 428px;
+            height: 926px;
+            overflow: hidden;
+            margin: 0;
+        }
+
         h1 {
-            font-family: 'Helvetica', 'Arial', sans-serif;
+            color: #fafafa;
+            margin-bottom: 1vh;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: top;
+            height: 100%;
+        }
+
+        .loaders {
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+            /* width: 16vh;
+            height: 16vh; */
+            margin: 0px;
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .loader {
+            min-width: 100px;
+        }
+
+        .circle-loader-2 {
+            width: 60px;
+            min-width: 60px;
+            height: 60px;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: auto;
+            border-radius: 50%;
+            border-top: 5px solid rgba(255, 255, 255, 0);
+            border-right: 5px solid rgba(255, 255, 255, 1);
+            border-bottom: 5px solid rgba(255, 255, 255, 1);
+            border-left: 5px solid rgba(255, 255, 255, 1);
+            -webkit-transform: translateZ(0);
+            -ms-transform: translateZ(0);
+            transform: translateZ(0);
+            -webkit-animation: circle-loader-spin 1s infinite linear;
+            animation: circle-loader-spin 1s infinite linear;
+        }
+
+        @keyframes circle-loader-spin {
+            0% {
+                -webkit-transform: rotate(0deg);
+                transform: rotate(0deg);
+            }
+
+            100% {
+                -webkit-transform: rotate(360deg);
+                transform: rotate(360deg);
+            }
         }
     </style>
 </head>
+
 <body>
-    <h1>Kitty Bucks</h1>
-    <div id="counter" style="font-size: 3em; margin-top: 10vh;"><span>$</span><span id="counter-val">0</span></div>
-    <div id="plot" style="width: 100%; height: 40vh; margin-top: 20vh;"></div>
+    <div class="container">
+        <h1>Kitty Bucks</h1>
+        <div class=".subtext">(ETF for kittens :KTTN)</div>
+        <div style="width: 16vh; height: 16vh; margin-top: 3vh;">
+            <div class="loaders" id="loader">
+                <div class="loader circle-loader-2"></div>
+            </div>
+            <img src="pictures/0.png" alt="status" id="status_id"
+                style="width: 100%; height: 100%;  opacity: 0; display: none;" />
+        </div>
+        <div style="width: 100%; margin-top: 3vh;">
+            <div id="counter"
+                style="font-size: 2em; margin-top: 0vh; display: flex; flex-direction: row; justify-content: center; width: 100%;">
+                <div><span>$</span><span id="counter-val">0</span></div>
+            </div>
+            <div id="plot" style="width: 100%; height: 40vh; margin-top: 1vh;"></div>
+        </div>
+        <div style="width: 100%; display: flex; flex-direction: column; align-items: center; margin-top: 3vh;">
+            <div style="font-size: 1.5em;">Invest now!</div>
+            <div style="color: #ff9999;"><span style="font-size: 0.6rem; vertical-align: top;">&#65121;</span>Capital at
+                risk. -30% returns guaranteed</div>
+        </div>
+    </div>
 
     <script>
         const currentValue = 600;
@@ -27,12 +153,14 @@
         const formattedDate = currentDate.format('YYYY-MM-DD');
         var trace_dates = ['2024-10-16', '2024-11-19'];
         var trace_values = [300, 600];
-        trace_values.push(trace_values[trace_values.length - 1]);
+        const initialYValues = [0, 0, 0]; // Start from zero for
+        trace_values.push(currentValue);
         trace_dates.push(formattedDate);
+        console.log(trace_values);
         // Trace for the area chart
         const trace1 = {
             x: trace_dates, // Non-continuous dates
-            y: trace_values, // Y values
+            y: initialYValues, // Y values
             mode: 'lines', // Line mode
             fill: 'tozeroy', // Fill area to zero on Y-axis
             line: { width: 3, color: '#03dac6' }, // Line color and width
@@ -42,14 +170,16 @@
 
         // Trace for the last marker (highlighted point)
         const trace2 = {
-            x: [trace_dates[trace_dates.length-1]], // Last date
-            y: [trace_values[trace_values.length-1]], // Last Y value
+            x: [trace_dates[trace_dates.length - 1]], // Last date
+            y: [0],
+            //y: [trace_values[initialYValues.length - 1]], // Last Y value
             mode: 'markers', // Marker only
             marker: { size: 16, color: '#bb86fc' }, // Large pink dot
             hoverinfo: 'skip' // Disable hover tooltips for this trace
         };
 
         const data = [trace1, trace2];
+        //const data = [trace1];
 
         const layout = {
             title: {
@@ -64,8 +194,9 @@
                 fillcolor: 'rgba(0, 204, 255, 0.2)'
             },
             yaxis: {
-                range: [0, 1000],
-                autorange: true,
+                //range: [0, Math.min(Math.max(1000, Math.max(...trace_values) + 200))],
+                range: [0, Math.max(1000, Math.max(...trace_values) + 200)],
+                autorange: false,
                 gridcolor: '#444444',
                 zerolinecolor: '#555555',
                 color: '#fafafa'
@@ -84,20 +215,93 @@
 
         Plotly.newPlot('plot', data, layout, { displayModeBar: false, staticPlot: true });
 
-        let counts = setInterval(updated, 10);
-        let upto = 0;
-        var count = document.getElementById("counter-val");
 
-        function updated() {
-        // ++upto would never hit 88.5, it will hit 88.1 89.1 -> so we do += 0.1
-        // Updated: Show only one decimal using toFixed()
-            const _t = upto += 5;
-            count.innerHTML = _t;
-            // Changing upto to number again because toFixed converts it to string
-            if (Number(upto) === currentValue) {
-                clearInterval(counts);
+        window.addEventListener('DOMContentLoaded', (event) => {
+            function play_animation() {
+                let upto = 0;
+                var count = document.getElementById("counter-val");
+
+                let currentStep = 0;
+                const steps = 60; // Number of animation steps
+                const intervalDuration = 24; // Duration per step (ms)
+                const interpolatedCount = Array(steps).fill().map((_, i) => {
+                    return upto + (currentValue / steps) * i; // Linearly interpolate values
+                });
+                const interpolatedData = Array(steps).fill().map((_, i) => {
+                    return trace_values.map((v) => (v / steps) * i); // Linearly interpolate values
+                });
+
+                const interval = setInterval(() => {
+                    if (currentStep >= steps) {
+                        clearInterval(interval); // Stop animation when all steps are completed
+                        Plotly.react('plot', [
+                            { ...trace1, y: trace_values },
+                            { ...trace2, y: [trace_values[trace_values.length - 1]] }
+                        ], layout);
+                    } else {
+                        Plotly.react('plot', [
+                            { ...trace1, y: interpolatedData[currentStep] },
+                            { ...trace2, y: [interpolatedData[currentStep][interpolatedData[currentStep].length - 1]] }
+                        ], layout);
+                        currentStep++;
+                    }
+                }, intervalDuration);
+
+                const counterInterval = setInterval(() => {
+                    // ++upto would never hit 88.5, it will hit 88.1 89.1 -> so we do += 0.1
+                    // Updated: Show only one decimal using toFixed()
+                    const _t = Math.round(interpolatedCount[currentStep]);
+
+                    // Changing upto to number again because toFixed converts it to string
+                    if (currentStep >= steps) {
+                        clearInterval(counterInterval);
+                        count.innerHTML = currentValue;
+                        var loader = document.getElementById("loader");
+                        loader.classList.add("fadeOut");
+                        setTimeout(() => {
+                            loader.style.display = "none";
+                            img.style.display = "block";
+                            img.classList.add("fadeIn");
+                        }, 450);
+
+                    }
+                    else {
+                        count.innerHTML = _t;
+                    }
+                }, intervalDuration);
+                console.log(interpolatedCount);
             }
-        }
+
+            img = document.getElementById("status_id");
+            if (currentValue < 100) {
+                img.src = "pictures/0.png";
+            } else if (currentValue < 200) {
+                img.src = "pictures/100.png";
+            } else if (currentValue < 300) {
+                img.src = "pictures/200.png";
+            } else if (currentValue < 400) {
+                img.src = "pictures/300.png";
+            } else if (currentValue < 600) {
+                img.src = "pictures/400.png";
+            } else if (currentValue < 800) {
+                img.src = "pictures/600.png";
+            } else if (currentValue < 1600) {
+                img.src = "pictures/800.png";
+            } else if (currentValue < 3200) {
+                img.src = "pictures/1600.png";
+            } else {
+                img.src = "pictures/3200.png";
+            }
+
+
+            setTimeout(() => {
+                play_animation();
+            }, 200);
+
+        });
+
+
     </script>
 </body>
+
 </html>
